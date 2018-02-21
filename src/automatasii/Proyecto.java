@@ -86,7 +86,7 @@ public class Proyecto {
                                     return true;
                                 }
                             }
-                            error();
+                            error(reserv);
                         }
                     } else {
                         for (int i = 0; i >= (palabrasReserv.length); i++) {
@@ -96,7 +96,7 @@ public class Proyecto {
                                 return true;
                             }
                         }
-                        error();
+                        error(reserv);
                     }
                 }
             }
@@ -133,7 +133,7 @@ public class Proyecto {
                     }
 
                 } else {
-                    error();
+                    error(identificador);
                 }
             } else {
                 return false;
@@ -143,7 +143,7 @@ public class Proyecto {
 
     }
 
-    private void error() {
+    private void error(String e) {
         String error = "";
         for (int i = 0; i < palabra.length; i++) {
             error += palabra[i];
