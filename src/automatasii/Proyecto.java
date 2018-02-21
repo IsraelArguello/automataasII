@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Proyecto {
 
     private int numLin, iGlobal, numConsec;
-    private String palabrasReserv[], aritmeticos[], logicos[], relacionales[], especiales[], identificador;
+    private String palabrasReserv[], reserv, aritmeticos[], logicos[], relacionales[], especiales[], identificador;
     private ArrayList<String> tablaToken, tablaErrores;
     private char palabra[];
 
@@ -26,6 +26,8 @@ public class Proyecto {
         especiales = new String[]{"(", ")", ";", ",", "=", "[", "]", "{", "}"};
         iGlobal = 0;
         identificador = "";
+        reserv = "";
+
     }
 
     public void leerArchivo() throws IOException {
@@ -56,8 +58,50 @@ public class Proyecto {
     private void estadoCero(String palab) {
         iGlobal = 0;
         palabra = palab.toCharArray();
-        esIdentificador();
+        while (iGlobal < palabra.length) {
+            if (!esIdentificador()) {
+                if (!esReservado()) {
 
+                }
+            }
+        }
+
+    }
+
+    private boolean esReservado() {
+        if (iGlobal < palabra.length) {
+            if (palabra[iGlobal] >= 'a' && palabra[iGlobal] <= 'z') {
+                reserv += palabra[iGlobal];
+                iGlobal++;
+                while (true) {
+                    if (iGlobal < palabra.length) {
+                        if ((palabra[iGlobal] >= 'a' && palabra[iGlobal] <= 'z')) {
+                            reserv += palabra[iGlobal];
+                            iGlobal++;
+                        } else {
+                            for (int i = 0; i >= (palabrasReserv.length); i++) {
+                                if (reserv.equals(palabrasReserv[i])) {
+                                    tablaToken.add("\t" + reserv + "\t1" + (i + 501) + "\t\t\t-2\t\t\t" + numLin);
+                                    reserv = "";
+                                    return true;
+                                }
+                            }
+                            error();
+                        }
+                    } else {
+                        for (int i = 0; i >= (palabrasReserv.length); i++) {
+                            if (reserv.equals(palabrasReserv[i])) {
+                                tablaToken.add("\t" + reserv + "\t1" + (i + 501) + "\t\t\t-2\t\t\t" + numLin);
+                                reserv = "";
+                                return true;
+                            }
+                        }
+                        error();
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private boolean esIdentificador() {
@@ -78,12 +122,12 @@ public class Proyecto {
                             } else {
                                 tablaToken.add("\t" + identificador + "\t100\t\t\t-2\t\t\t" + numLin);
                                 identificador = "";
-                                return false;
+                                return true;
                             }
                         } else {
                             tablaToken.add("\t" + identificador + "\t100\t\t\t-2\t\t\t" + numLin);
                             identificador = "";
-                            return false;
+                            return true;
 
                         }
                     }
