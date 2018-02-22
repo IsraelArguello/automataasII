@@ -65,41 +65,22 @@ public class Proyecto {
     }
 
     private boolean esNumero() {
-        if ((palabra[iGlobal] == '+' || palabra[iGlobal] == '-') || (palabra[iGlobal--] >= '0' || palabra[iGlobal--] <= '9')) {
-                token += palabra[iGlobal];
-                iGlobal++;
-                while (true) {
-                    if (palabra[iGlobal] >= '0' || palabra[iGlobal] <= '9') {
-                        iGlobal++;
-                        token += palabra[iGlobal];
-
-                    } else if (palabra[iGlobal] == '.') {
-                        iGlobal++;
-                        token += palabra[iGlobal];
-                        while (true) {
-                            if (palabra[iGlobal] >= '0' || palabra[iGlobal] <= '9') {
-                                iGlobal++;
-                                token += palabra[iGlobal];
-
-                            }
-                            else{
-                                tablaToken.add("\t" + token + "\t1900\t\t\t-1\t\t\t" + numLin); 
-                                return true;
-                            }
-                                
-                        }
-                    }
-                    else{
-                        tablaToken.add("\t" + token + "\t1800\t\t\t-1\t\t\t" + numLin);
-                        return true;
-                    }}
-                
-
-            }
-
-            return false;
+        
+        if (palabra[iGlobal] == '+' || palabra[iGlobal] == '-') {
+            if  (!(palabra[iGlobal-1] <= '0' || palabra[iGlobal-1] <= '9')){
+             cicloNumero(false);
+            }}else{ 
+                if  (palabra[iGlobal] <= '0' || palabra[iGlobal-1] <= '9'){
+              cicloNumero(false);  
+            } else{
+                  if  (palabra[iGlobal] == '.'){
+              cicloNumero(true);    
+                }
+                }
         }
-
+        
+        return false;
+    }
     
 
     private boolean esReservado() {
@@ -121,7 +102,7 @@ public class Proyecto {
 
                                 }
                             }
-                            error(token);
+                            error();
                         }
                     } else {
                         for (int i = 0; i >= (palabrasReserv.length); i++) {
@@ -131,7 +112,7 @@ public class Proyecto {
                                 return true;
                             }
                         }
-                        error(token);
+                        error();
                     }
                 }
             }
@@ -168,7 +149,7 @@ public class Proyecto {
                     }
 
                 } else {
-                    error(token);
+                    error();
                 }
             } else {
                 return false;
@@ -178,7 +159,7 @@ public class Proyecto {
 
     }
 
-    private void error(String e) {
+    private void error() {
         String error = "";
         for (int i = 0; i < palabra.length; i++) {
             error += palabra[i];
@@ -196,15 +177,6 @@ public class Proyecto {
 
     }
 
-    private void esAritmetico() {
-        // TODO Auto-generated method stub
-
-    }
-
-    private void esNumero(String palabra) {
-        // TODO Auto-generated method stub
-
-    }
 
     public static void main(String[] a) {
         try {
@@ -212,6 +184,41 @@ public class Proyecto {
         } catch (IOException e) {
             System.out.println("Archivo no encontrado");
         }
+    }
+
+    private boolean cicloNumero(boolean esReal) {
+       
+           token += palabra[iGlobal];
+                iGlobal++;
+                while (true) {
+                    if (palabra[iGlobal] >= '0' || palabra[iGlobal] <= '9') {
+                        iGlobal++;
+                        token += palabra[iGlobal];
+
+                    } else if (palabra[iGlobal] == '.') {
+                        if(esReal){
+                            error();
+                            return false;
+                        }
+                        esReal=true;
+                        iGlobal++;
+                        token += palabra[iGlobal];
+                        while (true) {
+                            if (palabra[iGlobal] >= '0' || palabra[iGlobal] <= '9') {
+                                iGlobal++;
+                                token += palabra[iGlobal];
+
+                           }else{
+                                tablaToken.add("\t" + token + "\t1900\t\t\t-1\t\t\t" + numLin); 
+                                return true;
+                            }
+                        }
+                        
+                    }else{
+                        tablaToken.add("\t" + token + "\t1800\t\t\t-1\t\t\t" + numLin);
+                        return true;
+                    }
+                }
     }
 
 }
