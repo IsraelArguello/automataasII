@@ -9,7 +9,8 @@ import java.util.ArrayList;
 public class Proyecto {
 
     private int numLin, iGlobal, numConsec;
-    private String palabrasReserv[], aritmeticos[], logicos[], relacionales[], especiales[], token;
+    private String palabrasReserv[], token;
+    private char aritmeticos[], especiales[];
     public ArrayList<String> tablaToken, tablaErrores;
     private char palabra[];
 
@@ -20,10 +21,8 @@ public class Proyecto {
             "string", "if", "else", "then", "while", "do", "repeat", "until", "var", "procedure", "call"};
         tablaToken = new ArrayList<String>();
         tablaErrores = new ArrayList<String>();
-        aritmeticos = new String[]{"-", "+", "/", "*", "%"};
-        relacionales = new String[]{"<", ">", "<=", ">=", "==", "!="};
-        logicos = new String[]{"||", "&&", "!"};
-        especiales = new String[]{"(", ")", ";", ",", "=", "[", "]", "{", "}"};
+        aritmeticos = new char[]{'-', '+', '/', '*', '%'};
+        especiales = new char[]{'(', ')', ';', ',', '=', '[', ']', '{', '}'};
         iGlobal = 0;
         token = "";
 
@@ -53,13 +52,15 @@ public class Proyecto {
 
     private void estadoCero(String palab) {
         iGlobal = 0;
-        palabra = palab.toCharArray();
+        palabra = palab.toLowerCase().toCharArray();
         while (iGlobal < palabra.length) {
             if (palabra[iGlobal] != ' ') {
                 if (!esIdentificador()) {
                     if (!esReservado()) {
                         if (!esNumero()) {
+                            if (!esAritmetico()) {
 
+                            }
                         }
                     }
                 }
@@ -73,14 +74,19 @@ public class Proyecto {
     private boolean esNumero() {
 
         if (palabra[iGlobal] == '+' || palabra[iGlobal] == '-') {
-            if (!(palabra[iGlobal - 1] <= '0' && palabra[iGlobal - 1] <= '9') || palabra[iGlobal - 1] <= ' ') {
-                token+=palabra[iGlobal];
+            if (!(palabra[iGlobal - 1] >= '0' && palabra[iGlobal - 1] <= '9') || palabra[iGlobal - 1] == ' ') {
+                token += palabra[iGlobal];
                 iGlobal++;
                 if (cicloNumero(false)) {
+                    return true;
+                } else if (palabra[iGlobal] == '.') {
+                    if (cicloNumero(true)) {
                         return true;
+                    }
+
                 }
             }
-        } else if (palabra[iGlobal] <= '0' || palabra[iGlobal - 1] <= '9') {
+        } else if (palabra[iGlobal] <= '0' || palabra[iGlobal] <= '9') {
             if (cicloNumero(false)) {
                 return true;
             }
@@ -90,6 +96,30 @@ public class Proyecto {
             }
         }
 
+        return false;
+    }
+
+    private boolean esAritmetico() {
+
+        for (int i = 0; i < aritmeticos.length; i++) {
+            if (palabra[iGlobal] == aritmeticos[i]
+                    && ((palabra[iGlobal + 1] >= '0' && palabra[iGlobal + 1] <= '9')
+                    || (revisionAritmeticos(palabra[iGlobal + 1])))) {
+                tablaToken.add("\t\t" + palabra[iGlobal] + "\t\t" + (i + 201) + "\t\t\t-1\t\t\t" + numLin);
+                iGlobal++;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean revisionAritmeticos(char signo) {
+        for (int i = 0; i < aritmeticos.length; i++) {
+            if (signo == aritmeticos[i]) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -193,13 +223,11 @@ public class Proyecto {
 
     private boolean cicloNumero(boolean esReal) {
 
-     
-
         while (true) {
             if (iGlobal < palabra.length) {
                 if (palabra[iGlobal] >= '0' && palabra[iGlobal] <= '9') {
                     token += palabra[iGlobal];
-                     iGlobal++;
+                    iGlobal++;
                 } else if (palabra[iGlobal] == '.') {
                     if (esReal) {
                         error();
@@ -209,20 +237,20 @@ public class Proyecto {
                     token += palabra[iGlobal];
                     iGlobal++;
                     while (true) {
-                        if (palabra[iGlobal] >= '0' || palabra[iGlobal] <= '9') {
+                        if (palabra[iGlobal] >= '0' && palabra[iGlobal] <= '9') {
                             token += palabra[iGlobal];
                             iGlobal++;
 
                         } else {
                             tablaToken.add("\t\t" + token + "\t900\t\t\t-1\t\t\t" + numLin);
-                            token="";
+                            token = "";
                             return true;
                         }
                     }
 
                 } else {
                     tablaToken.add("\t\t" + token + "\t800\t\t\t-1\t\t\t" + numLin);
-                     token="";
+                    token = "";
                     return true;
                 }
             }
