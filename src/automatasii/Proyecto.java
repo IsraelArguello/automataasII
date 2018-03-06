@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 public class Proyecto {
 
-    private int numLin, iGlobal, numConsec,idError;
+    private int numLin, iGlobal, numConsec, idError;
     private String palabrasReserv[], token;
     private char aritmeticos[], especiales[];
     public ArrayList<String> tablaToken, tablaErrores;
@@ -30,7 +30,7 @@ public class Proyecto {
         iGlobal = 0;
         token = "";
         cadena = "";
-        idError=1;
+        idError = 1;
 
     }
 
@@ -56,6 +56,7 @@ public class Proyecto {
     }
 
     private void estadoCero(String palab) {
+        token="";
         iGlobal = 0;
         palabra = palab.toLowerCase().toCharArray();
         while (iGlobal < palabra.length) {
@@ -68,11 +69,13 @@ public class Proyecto {
                                 if (!esAritmetico()) {
                                     if (!esRelacional()) {
                                         if (!esLogico()) {
-                                            error();
+                                            if (!esCaractEsp()) {
+                                                error();
+                                            }
                                         }
                                     }
-                                }
 
+                                }
                             }
                         }
                     }
@@ -85,9 +88,10 @@ public class Proyecto {
     }
 
     private boolean esLogico() {
+        token="";
         if (iGlobal < palabra.length) {
             if (palabra[iGlobal] == '&' || palabra[iGlobal] == '|' || palabra[iGlobal] == '!') {
-                if (palabra[iGlobal] == '&' && iGlobal < (palabra.length -1) && palabra[iGlobal + 1] == '&') {
+                if (palabra[iGlobal] == '&' && iGlobal < (palabra.length - 1) && palabra[iGlobal + 1] == '&') {
                     token += palabra[iGlobal];
                     token += palabra[iGlobal + 1];
                     iGlobal += 2;
@@ -95,7 +99,7 @@ public class Proyecto {
                     token = "";
                     return true;
                 }
-                if (palabra[iGlobal] == '|' && iGlobal < (palabra.length -1) && palabra[iGlobal + 1] == '|') {
+                if (palabra[iGlobal] == '|' && iGlobal < (palabra.length - 1) && palabra[iGlobal + 1] == '|') {
                     token += palabra[iGlobal];
                     token += palabra[iGlobal + 1];
                     iGlobal += 2;
@@ -103,7 +107,7 @@ public class Proyecto {
                     token = "";
                     return true;
                 }
-                if (palabra[iGlobal] == '!'&& iGlobal < (palabra.length -1) && palabra[iGlobal + 1] != '=') {
+                if (palabra[iGlobal] == '!' && iGlobal < (palabra.length - 1) && palabra[iGlobal + 1] != '=') {
                     token += palabra[iGlobal];
                     iGlobal++;
                     tablaToken.add("\t" + token + "\t\t\t403\t\t\t\t\t-1\t\t\t\t" + numLin);
@@ -112,7 +116,7 @@ public class Proyecto {
                 }
                 return false;
             }
-            
+
             return false;
         } else {
             token += palabra[iGlobal];
@@ -125,61 +129,63 @@ public class Proyecto {
     }
 
     private boolean esComentario() {
-    
-            if (palabra[iGlobal] == '/') {
+int iGlobaltemp=iGlobal;
+token="";
+        if (palabra[iGlobal] == '/') {
+            token += palabra[iGlobal];
+            iGlobal++;
+            if (iGlobal<palabra.length && palabra[iGlobal] == '/') {
                 token += palabra[iGlobal];
                 iGlobal++;
-                if (palabra[iGlobal] == '/') {
-                    token += palabra[iGlobal];
-                    iGlobal++;
-                    while (true) {
-                        if (iGlobal < palabra.length) {
-                            if (palabra[iGlobal] == '/') {
+                while (true) {
+                    if (iGlobal < palabra.length) {
+                        if (palabra[iGlobal] == '/') {
+                            token += palabra[iGlobal];
+                            iGlobal++;
+                            if (iGlobal<palabra.length && palabra[iGlobal] == '/') {
                                 token += palabra[iGlobal];
+                                tablaToken.add("\t" + token + "\t\t\t700\t\t\t\t\t-1\t\t\t\t" + numLin);
                                 iGlobal++;
-                                if (palabra[iGlobal] == '/') {
-                                    token += palabra[iGlobal];
-                                    tablaToken.add("\t" + token + "\t\t\t700\t\t\t\t\t-1\t\t\t\t" + numLin);
-                                    iGlobal++;
-                                    token = "";
-                                    return true;
-                                } else {
-                                    return false;
-                                }
-
+                                token = "";
+                                return true;
                             } else {
-                                token += palabra[iGlobal];
-                                iGlobal++;
+                                iGlobal=iGlobaltemp;
+                                return false;
                             }
 
                         } else {
-                            try {
-                                if (br.ready()) {
-                                    numLin++;
-                                    palabra = br.readLine().toLowerCase().toCharArray();
-                                    iGlobal = 0;
-                                    token+=' ';
-                                  
-                                }
-                            } catch (IOException ex) {
-                                Logger.getLogger(Proyecto.class.getName()).log(Level.SEVERE, null, ex);
-                            }
+                            token += palabra[iGlobal];
+                            iGlobal++;
                         }
 
+                    } else {
+                        try {
+                            if (br.ready()) {
+                                numLin++;
+                                palabra = br.readLine().toLowerCase().toCharArray();
+                                iGlobal = 0;
+                                token += ' ';
+
+                            }
+                        } catch (IOException ex) {
+                            Logger.getLogger(Proyecto.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
 
-                } else {
-                    iGlobal--;
-                    return false;
                 }
+
+            } else {
+                iGlobal--;
+                return false;
             }
-            return false;
+        }
+        return false;
     }
 
     private boolean esNumero() {
-
+token="";
         if (palabra[iGlobal] == '+' || palabra[iGlobal] == '-') {
-            if (!(palabra[iGlobal - 1] >= '0' && palabra[iGlobal - 1] <= '9') || palabra[iGlobal - 1] == ' ') {
+            if (iGlobal==0 || (!(palabra[iGlobal - 1] >= '0' && palabra[iGlobal - 1] <= '9') || palabra[iGlobal - 1] == ' ')) {
                 token += palabra[iGlobal];
                 iGlobal++;
                 if (cicloNumero(false)) {
@@ -196,7 +202,7 @@ public class Proyecto {
                 return true;
             }
         } else if (palabra[iGlobal] == '.') {
-            if (cicloNumero(true)) {
+            if (cicloNumero(false)) {
                 return true;
             }
         }
@@ -205,19 +211,18 @@ public class Proyecto {
     }
 
     private boolean esRelacional() {
-
+token="";
         if (palabra[iGlobal] == '<') {
             token += palabra[iGlobal];
             iGlobal++;
             if (iGlobal < palabra.length && palabra[iGlobal] == '=') {
                 token += palabra[iGlobal];
-                tablaToken.add("\t" + token + "\t\t\t" + 303 + "\t\t\t\t\t-1\t\t\t\t" + numLin);
                 iGlobal++;
+                tablaToken.add("\t" + token + "\t\t\t" + 303 + "\t\t\t\t\t-1\t\t\t\t" + numLin);
                 token = "";
                 return true;
             } else {
                 tablaToken.add("\t" + token + "\t\t\t" + 301 + "\t\t\t\t\t-1\t\t\t\t" + numLin);
-                iGlobal++;
                 token = "";
                 return true;
             }
@@ -248,6 +253,7 @@ public class Proyecto {
                 token = "";
                 return true;
             } else {
+                iGlobal--;
                 return false;
             }
         }
@@ -271,9 +277,7 @@ public class Proyecto {
     private boolean esAritmetico() {
 
         for (int i = 0; i < aritmeticos.length; i++) {
-            if (palabra[iGlobal] == aritmeticos[i] && iGlobal < (palabra.length -1)
-                    && ((palabra[iGlobal + 1] >= '0' && palabra[iGlobal + 1] <= '9')
-                    || (revisionAritmeticos(palabra[iGlobal + 1]))||palabra[iGlobal + 1]=='#')) {
+            if (palabra[iGlobal] == aritmeticos[i]) {
                 tablaToken.add("\t" + palabra[iGlobal] + "\t\t\t" + (i + 201) + "\t\t\t\t\t-1\t\t\t\t" + numLin);
                 iGlobal++;
                 return true;
@@ -292,14 +296,15 @@ public class Proyecto {
         return false;
     }
 
+            
     private boolean esReservado() {
         if (iGlobal < palabra.length) {
-            if ((palabra[iGlobal] >= 'a' && palabra[iGlobal] <= 'z') ) {
+            if ((palabra[iGlobal] >= 'a' && palabra[iGlobal] <= 'z')) {
                 token += palabra[iGlobal];
                 iGlobal++;
                 while (true) {
                     if (iGlobal < palabra.length) {
-                        if ((palabra[iGlobal] >= 'a' && palabra[iGlobal] <= 'z')||(palabra[iGlobal] >= '0' && palabra[iGlobal] <= '9')) {
+                        if ((palabra[iGlobal] >= 'a' && palabra[iGlobal] <= 'z') || (palabra[iGlobal] >= '0' && palabra[iGlobal] <= '9')) {
                             token += palabra[iGlobal];
                             iGlobal++;
                         } else {
@@ -311,10 +316,10 @@ public class Proyecto {
 
                                 }
                             }
-                             tablaErrores.add("\t" + idError + "\t\t\t"+token+"\t\t\t" + numLin);
-                                idError++;
-                                token = "";
-                                return true;
+                            tablaErrores.add("\t" + idError + "\t\t\t" + token + "\t\t\t" + numLin);
+                            idError++;
+                            token = "";
+                            return true;
                         }
                     } else {
                         for (int i = 0; i < palabrasReserv.length; i++) {
@@ -324,10 +329,10 @@ public class Proyecto {
                                 return true;
                             }
                         }
-                         tablaErrores.add("\t" + idError + "\t\t\t"+token+"\t\t\t" + numLin);
-                                idError++;
-                                token = "";
-                                return true;
+                        tablaErrores.add("\t" + idError + "\t\t\t" + token + "\t\t\t" + numLin);
+                        idError++;
+                        token = "";
+                        return true;
                     }
                 }
             }
@@ -336,12 +341,12 @@ public class Proyecto {
     }
 
     private boolean esIdentificador() {
-
+token="";
         if (iGlobal < palabra.length) {
             if (palabra[iGlobal] == '#') {
                 token += "#";
                 iGlobal++;
-                if (palabra[iGlobal] >= 'a' && palabra[iGlobal] <= 'z') {
+                if (iGlobal < palabra.length && palabra[iGlobal] >= 'a' && palabra[iGlobal] <= 'z') {
                     token += palabra[iGlobal];
                     iGlobal++;
                     while (true) {
@@ -375,38 +380,54 @@ public class Proyecto {
 
     }
 
+    private boolean esCaractEsp() {
+        token = "";
+        if (iGlobal < palabra.length) {
+            for (int i = 0; i < especiales.length; i++) {
+                if (palabra[iGlobal]==especiales[i]) {
+                    tablaToken.add("\t" + palabra[iGlobal] + "\t\t\t" + (i + 601) + "\t\t\t\t\t-1\t\t\t\t" + numLin);
+                    iGlobal++;
+                    return true;
+                }
+            }
+            
+                return false;
+        }
+        return false;
+    }
+
     private void error() {
-        token="";
-        if(palabra[iGlobal]=='#'){
-            token+=palabra[iGlobal];
+        token = "";
+        if (palabra[iGlobal] == '#') {
+            token += palabra[iGlobal];
             iGlobal++;
             while (true) {
-                        if (iGlobal < palabra.length) {
-                            if ((palabra[iGlobal] >= 'a' && palabra[iGlobal] <= 'z') || palabra[iGlobal] >= '_'
-                                    || (palabra[iGlobal] >= '0' && palabra[iGlobal] <= '9')) {
-                                token += palabra[iGlobal];
-                                iGlobal++;
-                            } else {
-                                tablaErrores.add("\t" + idError + "\t\t\t"+token+"\t\t\t" + numLin);
-                                idError++;
-                                token = "";
-                                break;
-                               
-                            }
-                        } else {
-                            tablaErrores.add("\t" + idError + "\t\t\t"+token+"\t\t\t" + numLin);
-                            idError++;
-                            token = "";
-                            break;
+                if (iGlobal < palabra.length) {
+                    if ((palabra[iGlobal] >= 'a' && palabra[iGlobal] <= 'z') || palabra[iGlobal] >= '_'
+                            || (palabra[iGlobal] >= '0' && palabra[iGlobal] <= '9')) {
+                        token += palabra[iGlobal];
+                        iGlobal++;
+                    } else {
+                        tablaErrores.add("\t" + idError + "\t\t\t" + token + "\t\t\t" + numLin);
+                        idError++;
+                        token = "";
+                        break;
 
-                        }
                     }
-        }else{
-        token+=palabra[iGlobal];
-        iGlobal++;
-        tablaErrores.add("\t" + idError + "\t\t\t"+token+"\t\t\t-2\t\t\t" + numLin);
-                            idError++;
-                            token = "";
+                } else {
+                    tablaErrores.add("\t" + idError + "\t\t\t" + token + "\t\t\t" + numLin);
+                    idError++;
+                    token = "";
+                    break;
+
+                }
+            }
+        } else {
+            token += palabra[iGlobal];
+            iGlobal++;
+            tablaErrores.add("\t" + idError + "\t\t\t" + token + "\t\t\t" + numLin);
+            idError++;
+            token = "";
         }
 
     }
@@ -421,6 +442,7 @@ public class Proyecto {
         for (int i = 0; i < p.tablaToken.size(); i++) {
             System.out.println(p.tablaToken.get(i));
         }
+        System.out.println("\n\n\n");
         for (int i = 0; i < p.tablaErrores.size(); i++) {
             System.out.println(p.tablaErrores.get(i));
         }
@@ -441,7 +463,7 @@ public class Proyecto {
                     token += palabra[iGlobal];
                     iGlobal++;
                     while (true) {
-                        if (palabra[iGlobal] >= '0' && palabra[iGlobal] <= '9') {
+                        if (iGlobal<palabra.length && palabra[iGlobal] >= '0' && palabra[iGlobal] <= '9') {
                             token += palabra[iGlobal];
                             iGlobal++;
 
