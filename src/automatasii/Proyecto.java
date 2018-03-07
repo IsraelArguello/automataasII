@@ -3,7 +3,9 @@ package automatasii;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,7 +58,7 @@ public class Proyecto {
     }
 
     private void estadoCero(String palab) {
-        token="";
+        token = "";
         iGlobal = 0;
         palabra = palab.toLowerCase().toCharArray();
         while (iGlobal < palabra.length) {
@@ -70,7 +72,9 @@ public class Proyecto {
                                     if (!esRelacional()) {
                                         if (!esLogico()) {
                                             if (!esCaractEsp()) {
-                                                error();
+                                                if (!esConstante()) {
+                                                    error();
+                                                }
                                             }
                                         }
                                     }
@@ -87,8 +91,28 @@ public class Proyecto {
 
     }
 
+    private boolean esConstante() {
+        if (palabra[iGlobal] == '"') {
+            token += palabra[iGlobal];
+            iGlobal++;
+            while (true) {
+                if (palabra[iGlobal] == '"') {
+                    token += palabra[iGlobal];
+                    iGlobal++;
+                    tablaToken.add("\t" + token + "\t\t\t1000\t\t\t\t\t-1\t\t\t\t" + numLin);
+                    token = "";
+                    return true;
+                } else {
+                    token += palabra[iGlobal];
+                    iGlobal++;
+                }
+            }
+        }
+        return false;
+    }
+
     private boolean esLogico() {
-        token="";
+        token = "";
         if (iGlobal < palabra.length) {
             if (palabra[iGlobal] == '&' || palabra[iGlobal] == '|' || palabra[iGlobal] == '!') {
                 if (palabra[iGlobal] == '&' && iGlobal < (palabra.length - 1) && palabra[iGlobal + 1] == '&') {
@@ -129,12 +153,12 @@ public class Proyecto {
     }
 
     private boolean esComentario() {
-int iGlobaltemp=iGlobal;
-token="";
+        int iGlobaltemp = iGlobal;
+        token = "";
         if (palabra[iGlobal] == '/') {
             token += palabra[iGlobal];
             iGlobal++;
-            if (iGlobal<palabra.length && palabra[iGlobal] == '/') {
+            if (iGlobal < palabra.length && palabra[iGlobal] == '/') {
                 token += palabra[iGlobal];
                 iGlobal++;
                 while (true) {
@@ -142,15 +166,20 @@ token="";
                         if (palabra[iGlobal] == '/') {
                             token += palabra[iGlobal];
                             iGlobal++;
-                            if (iGlobal<palabra.length && palabra[iGlobal] == '/') {
-                                token += palabra[iGlobal];
-                                tablaToken.add("\t" + token + "\t\t\t700\t\t\t\t\t-1\t\t\t\t" + numLin);
-                                iGlobal++;
-                                token = "";
-                                return true;
+                            if (iGlobal < palabra.length) {
+                                if (palabra[iGlobal] == '/') {
+                                    token += palabra[iGlobal];
+                                    tablaToken.add("\t" + token + "\t\t\t700\t\t\t\t\t-1\t\t\t\t" + numLin);
+                                    iGlobal++;
+                                    token = "";
+                                    return true;
+                                } else {
+                                    token += palabra[iGlobal];
+                                    iGlobal++;
+                                }
                             } else {
-                                iGlobal=iGlobaltemp;
-                                return false;
+                                tablaErrores.add("\t" + idError + "\t\t\t" + token + "\t\t\t" + numLin);
+                                return true;
                             }
 
                         } else {
@@ -166,6 +195,9 @@ token="";
                                 iGlobal = 0;
                                 token += ' ';
 
+                            } else {
+                                tablaErrores.add("\t" + idError + "\t\t\t" + token + "\t\t\t" + numLin);
+                                return true;
                             }
                         } catch (IOException ex) {
                             Logger.getLogger(Proyecto.class.getName()).log(Level.SEVERE, null, ex);
@@ -183,9 +215,9 @@ token="";
     }
 
     private boolean esNumero() {
-token="";
+        token = "";
         if (palabra[iGlobal] == '+' || palabra[iGlobal] == '-') {
-            if (iGlobal==0 || (!(palabra[iGlobal - 1] >= '0' && palabra[iGlobal - 1] <= '9') || palabra[iGlobal - 1] == ' ')) {
+            if (iGlobal == 0 || (!(palabra[iGlobal - 1] >= '0' && palabra[iGlobal - 1] <= '9') || palabra[iGlobal - 1] == ' ')) {
                 token += palabra[iGlobal];
                 iGlobal++;
                 if (cicloNumero(false)) {
@@ -211,7 +243,7 @@ token="";
     }
 
     private boolean esRelacional() {
-token="";
+        token = "";
         if (palabra[iGlobal] == '<') {
             token += palabra[iGlobal];
             iGlobal++;
@@ -296,7 +328,6 @@ token="";
         return false;
     }
 
-            
     private boolean esReservado() {
         if (iGlobal < palabra.length) {
             if ((palabra[iGlobal] >= 'a' && palabra[iGlobal] <= 'z')) {
@@ -341,7 +372,7 @@ token="";
     }
 
     private boolean esIdentificador() {
-token="";
+        token = "";
         if (iGlobal < palabra.length) {
             if (palabra[iGlobal] == '#') {
                 token += "#";
@@ -384,14 +415,14 @@ token="";
         token = "";
         if (iGlobal < palabra.length) {
             for (int i = 0; i < especiales.length; i++) {
-                if (palabra[iGlobal]==especiales[i]) {
+                if (palabra[iGlobal] == especiales[i]) {
                     tablaToken.add("\t" + palabra[iGlobal] + "\t\t\t" + (i + 601) + "\t\t\t\t\t-1\t\t\t\t" + numLin);
                     iGlobal++;
                     return true;
                 }
             }
-            
-                return false;
+
+            return false;
         }
         return false;
     }
@@ -436,6 +467,7 @@ token="";
         Proyecto p = new Proyecto();
         try {
             p.leerArchivo();
+            p.impArchivo();
         } catch (IOException e) {
             System.out.println("Archivo no encontrado");
         }
@@ -463,7 +495,7 @@ token="";
                     token += palabra[iGlobal];
                     iGlobal++;
                     while (true) {
-                        if (iGlobal<palabra.length && palabra[iGlobal] >= '0' && palabra[iGlobal] <= '9') {
+                        if (iGlobal < palabra.length && palabra[iGlobal] >= '0' && palabra[iGlobal] <= '9') {
                             token += palabra[iGlobal];
                             iGlobal++;
 
@@ -485,6 +517,43 @@ token="";
                 return true;
             }
 
+        }
+    }
+    
+    private void impArchivo()
+    {
+        FileWriter fichero = null;
+        FileWriter fichero2 = null;
+        PrintWriter pw = null;
+                PrintWriter pw2 = null;
+        try
+        {
+            fichero = new FileWriter("./tablaTokens.txt");
+            pw = new PrintWriter(fichero);
+
+            for (int i = 0; i < tablaToken.size(); i++)
+                pw.println(tablaToken.get(i));
+            
+            
+            fichero2 = new FileWriter("./tablaErrores.txt");
+            pw2 = new PrintWriter(fichero2);
+
+            for (int i = 0; i < tablaErrores.size(); i++)
+                pw2.println(tablaErrores.get(i));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+           try {
+           // Nuevamente aprovechamos el finally para 
+           // asegurarnos que se cierra el fichero.
+           if (null != fichero){
+              fichero.close();
+              fichero2.close();
+           }
+           } catch (Exception e2) {
+              e2.printStackTrace();
+           }
         }
     }
 

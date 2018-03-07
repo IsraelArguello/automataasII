@@ -1,0 +1,2 @@
+	N° Consecutivo		Error		N° Linea
+	1			//-.356			2
