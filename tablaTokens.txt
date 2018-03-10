@@ -1,3 +1,4 @@
 	Palabra			N° Token			Posicion en tabla			N° Linea
 	//hola  puto//			700					-1				2
 	"hola adios 750 #"			1000					-1				2
+	/			203					-1				3

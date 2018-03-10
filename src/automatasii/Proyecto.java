@@ -53,7 +53,7 @@ public class Proyecto {
 
         }
 
-        //impFile();
+        
         br.close();
     }
 
@@ -153,7 +153,7 @@ public class Proyecto {
     }
 
     private boolean esComentario() {
-        int iGlobaltemp = iGlobal;
+        
         token = "";
         if (palabra[iGlobal] == '/') {
             token += palabra[iGlobal];
@@ -166,6 +166,7 @@ public class Proyecto {
                         if (palabra[iGlobal] == '/') {
                             token += palabra[iGlobal];
                             iGlobal++;
+                          if (palabra[iGlobal-2] != '/') {
                             if (iGlobal < palabra.length) {
                                 if (palabra[iGlobal] == '/') {
                                     token += palabra[iGlobal];
@@ -181,7 +182,12 @@ public class Proyecto {
                                 tablaErrores.add("\t" + idError + "\t\t\t" + token + "\t\t\t" + numLin);
                                 return true;
                             }
-
+                        }else{
+                             
+                              token += palabra[iGlobal];
+                              tablaErrores.add("\t" + idError + "\t\t\t" + token + "\t\t\t" + numLin);
+                                return true;
+                        }
                         } else {
                             token += palabra[iGlobal];
                             iGlobal++;
