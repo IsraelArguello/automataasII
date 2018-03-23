@@ -12,9 +12,10 @@ import java.util.logging.Logger;
 
 public class Proyecto {
 
-    private int numLin, iGlobal, numConsec, idError;
-    private String palabrasReserv[], token;
-    private char aritmeticos[], especiales[];
+    private int numLin, iGlobal, idError;
+    private final String palabrasReserv[];
+    private String token;
+    private final char aritmeticos[], especiales[];
     public ArrayList<String> tablaToken, tablaErrores;
     private char palabra[];
     private String cadena;
@@ -22,7 +23,6 @@ public class Proyecto {
 
     public Proyecto() {
         numLin = 0;
-        numConsec = 1;
         palabrasReserv = new String[]{"program", "begin", "end", "input", "output", "integer", "real", "char",
             "string", "if", "else", "then", "while", "do", "repeat", "until", "var", "procedure", "call"};
         tablaToken = new ArrayList<String>();
@@ -62,7 +62,6 @@ public class Proyecto {
         iGlobal = 0;
         palabra = palab.toLowerCase().toCharArray();
         while (iGlobal < palabra.length) {
-
             if (palabra[iGlobal] != ' ') {
                 if (!esComentario()) {
                     if (!esIdentificador()) {
@@ -78,7 +77,6 @@ public class Proyecto {
                                             }
                                         }
                                     }
-
                                 }
                             }
                         }
@@ -88,7 +86,6 @@ public class Proyecto {
                 iGlobal++;
             }
         }
-
     }
 
     private boolean esConstante() {
@@ -546,7 +543,6 @@ public class Proyecto {
 
             for (int i = 0; i < tablaErrores.size(); i++)
                 pw2.println(tablaErrores.get(i));
-
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -562,5 +558,4 @@ public class Proyecto {
            }
         }
     }
-
 }
