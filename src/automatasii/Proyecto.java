@@ -16,7 +16,7 @@ public class Proyecto {
     private final String palabrasReserv[];
     private String token;
     private final char aritmeticos[], especiales[];
-    public ArrayList<String> tablaToken, tablaErrores;
+    public ArrayList<String> tablaToken, tablaErrores,tablaSintaxis;
     private char palabra[];
     private String cadena;
     private BufferedReader br;
@@ -27,6 +27,7 @@ public class Proyecto {
             "string", "if", "else", "then", "while", "do", "repeat", "until", "var", "procedure", "call"};
         tablaToken = new ArrayList<String>();
         tablaErrores = new ArrayList<String>();
+        tablaSintaxis = new ArrayList<>();
         aritmeticos = new char[]{'-', '+', '/', '*', '%'};
         especiales = new char[]{'(', ')', ';', ',', '=', '[', ']', '{', '}'};
         iGlobal = 0;
@@ -97,6 +98,7 @@ public class Proyecto {
                     token += palabra[iGlobal];
                     iGlobal++;
                     tablaToken.add("\t" + token + "\t\t\t1000\t\t\t\t\t-1\t\t\t\t" + numLin);
+                    tablaSintaxis.add(token+"$1000$-1$"+numLin);
                     token = "";
                     return true;
                 } else {
@@ -117,6 +119,7 @@ public class Proyecto {
                     token += palabra[iGlobal + 1];
                     iGlobal += 2;
                     tablaToken.add("\t" + token + "\t\t\t401\t\t\t\t\t-1\t\t\t\t" + numLin);
+                    tablaSintaxis.add(token+"$401$-1$"+numLin);
                     token = "";
                     return true;
                 }
@@ -125,6 +128,7 @@ public class Proyecto {
                     token += palabra[iGlobal + 1];
                     iGlobal += 2;
                     tablaToken.add("\t" + token + "\t\t\t402\t\t\t\t\t-1\t\t\t\t" + numLin);
+                    tablaSintaxis.add(token+"$402$-1$"+numLin);
                     token = "";
                     return true;
                 }
@@ -132,6 +136,7 @@ public class Proyecto {
                     token += palabra[iGlobal];
                     iGlobal++;
                     tablaToken.add("\t" + token + "\t\t\t403\t\t\t\t\t-1\t\t\t\t" + numLin);
+                    tablaSintaxis.add(token+"$403$-1$"+numLin);
                     token = "";
                     return true;
                 }
@@ -143,6 +148,7 @@ public class Proyecto {
             token += palabra[iGlobal];
             iGlobal++;
             tablaToken.add("\t" + token + "\t\t\t403\t\t\t\t\t-1\t\t\t\t" + numLin);
+            tablaSintaxis.add(token+"$403$-1$"+numLin);
             token = "";
             return true;
         }
@@ -168,6 +174,7 @@ public class Proyecto {
                                 if (palabra[iGlobal] == '/') {
                                     token += palabra[iGlobal];
                                     tablaToken.add("\t" + token + "\t\t\t700\t\t\t\t\t-1\t\t\t\t" + numLin);
+                                    tablaSintaxis.add(token+"$700$-1$"+numLin);
                                     iGlobal++;
                                     token = "";
                                     return true;
@@ -254,10 +261,12 @@ public class Proyecto {
                 token += palabra[iGlobal];
                 iGlobal++;
                 tablaToken.add("\t" + token + "\t\t\t" + 303 + "\t\t\t\t\t-1\t\t\t\t" + numLin);
+                tablaSintaxis.add(token+"$303$-1$"+numLin);
                 token = "";
                 return true;
             } else {
                 tablaToken.add("\t" + token + "\t\t\t" + 301 + "\t\t\t\t\t-1\t\t\t\t" + numLin);
+                tablaSintaxis.add(token+"$301$-1$"+numLin);
                 token = "";
                 return true;
             }
@@ -268,11 +277,13 @@ public class Proyecto {
             if (iGlobal < palabra.length && palabra[iGlobal] == '=') {
                 token += palabra[iGlobal];
                 tablaToken.add("\t" + token + "\t\t\t" + 304 + "\t\t\t\t\t-1\t\t\t\t" + numLin);
+                tablaSintaxis.add(token+"$304$-1$"+numLin);
                 iGlobal++;
                 token = "";
                 return true;
             } else {
                 tablaToken.add("\t" + token + "\t\t\t" + 302 + "\t\t\t\t\t-1\t\t\t\t" + numLin);
+                tablaSintaxis.add(token+"$302$-1$"+numLin);
                 iGlobal++;
                 token = "";
                 return true;
@@ -284,6 +295,7 @@ public class Proyecto {
             if (iGlobal < palabra.length && palabra[iGlobal] == '=') {
                 token += palabra[iGlobal];
                 tablaToken.add("\t" + token + "\t\t\t" + 305 + "\t\t\t\t\t-1\t\t\t\t" + numLin);
+                tablaSintaxis.add(token+"$305$-1$"+numLin);
                 iGlobal++;
                 token = "";
                 return true;
@@ -298,6 +310,7 @@ public class Proyecto {
             if (iGlobal < palabra.length && palabra[iGlobal] == '=') {
                 token += palabra[iGlobal];
                 tablaToken.add("\t" + token + "\t\t\t" + 306 + "\t\t\t\t\t-1\t\t\t\t" + numLin);
+                tablaSintaxis.add(token+"$306$-1$"+numLin);
                 iGlobal++;
                 token = "";
                 return true;
@@ -314,20 +327,12 @@ public class Proyecto {
         for (int i = 0; i < aritmeticos.length; i++) {
             if (palabra[iGlobal] == aritmeticos[i]) {
                 tablaToken.add("\t" + palabra[iGlobal] + "\t\t\t" + (i + 201) + "\t\t\t\t\t-1\t\t\t\t" + numLin);
+                tablaSintaxis.add(token+"$"+(i + 201) +"$-1$"+numLin);
                 iGlobal++;
                 return true;
             }
         }
 
-        return false;
-    }
-
-    private boolean revisionAritmeticos(char signo) {
-        for (int i = 0; i < aritmeticos.length; i++) {
-            if (signo == aritmeticos[i]) {
-                return true;
-            }
-        }
         return false;
     }
 
@@ -345,6 +350,7 @@ public class Proyecto {
                             for (int i = 0; i < palabrasReserv.length; i++) {
                                 if (token.equals(palabrasReserv[i])) {
                                     tablaToken.add("\t" + token + "\t\t\t" + (i + 501) + "\t\t\t\t\t-1\t\t\t\t" + numLin);
+                                    tablaSintaxis.add(token+"$"+(i + 501) +"$-1$"+numLin);
                                     token = "";
                                     return true;
 
@@ -359,6 +365,7 @@ public class Proyecto {
                         for (int i = 0; i < palabrasReserv.length; i++) {
                             if (token.equals(palabrasReserv[i])) {
                                 tablaToken.add("\t" + token + "\t\t\t" + (i + 501) + "\t\t\t\t\t-1\t\t\t\t" + numLin);
+                                tablaSintaxis.add(token+"$"+(i + 501) +"$-1$"+numLin);
                                 token = "";
                                 return true;
                             }
@@ -391,11 +398,13 @@ public class Proyecto {
                                 iGlobal++;
                             } else {
                                 tablaToken.add("\t" + token + "\t\t\t100\t\t\t-2\t\t\t" + numLin);
+                                tablaSintaxis.add(token+"$100$-2$"+numLin);
                                 token = "";
                                 return true;
                             }
                         } else {
                             tablaToken.add("\t" + token + "\t\t\t100\t\t\t-2\t\t\t" + numLin);
+                             tablaSintaxis.add(token+"$100$-2$"+numLin);
                             token = "";
                             return true;
 
@@ -420,6 +429,7 @@ public class Proyecto {
             for (int i = 0; i < especiales.length; i++) {
                 if (palabra[iGlobal] == especiales[i]) {
                     tablaToken.add("\t" + palabra[iGlobal] + "\t\t\t" + (i + 601) + "\t\t\t\t\t-1\t\t\t\t" + numLin);
+                     tablaSintaxis.add(token+"$"+ (i + 601) +"$-1$"+numLin);
                     iGlobal++;
                     return true;
                 }
@@ -504,6 +514,7 @@ public class Proyecto {
 
                         } else {
                             tablaToken.add("\t" + token + "\t\t\t900\t\t\t\t\t-1\t\t\t\t" + numLin);
+                            tablaSintaxis.add(token+"$900$-1$"+numLin);
                             token = "";
                             return true;
                         }
@@ -511,11 +522,13 @@ public class Proyecto {
 
                 } else {
                     tablaToken.add("\t" + token + "\t\t\t800\t\t\t\t\t-1\t\t\t\t" + numLin);
+                    tablaSintaxis.add(token+"$800$-1$"+numLin);
                     token = "";
                     return true;
                 }
             } else {
                 tablaToken.add("\t" + token + "\t\t\t800\t\t\t\t\t-1\t\t\t\t" + numLin);
+                tablaSintaxis.add(token+"$800$-1$"+numLin);
                 token = "";
                 return true;
             }
@@ -526,9 +539,7 @@ public class Proyecto {
     private void impArchivo()
     {
         FileWriter fichero = null;
-        FileWriter fichero2 = null;
         PrintWriter pw = null;
-                PrintWriter pw2 = null;
         try
         {
             fichero = new FileWriter("./tablaTokens.txt");
@@ -537,25 +548,26 @@ public class Proyecto {
             for (int i = 0; i < tablaToken.size(); i++)
                 pw.println(tablaToken.get(i));
             
-            
-            fichero2 = new FileWriter("./tablaErrores.txt");
-            pw2 = new PrintWriter(fichero2);
+               fichero.close();
+                          
+            fichero = new FileWriter("./tablaErrores.txt");
+            pw = new PrintWriter(fichero);
 
             for (int i = 0; i < tablaErrores.size(); i++)
-                pw2.println(tablaErrores.get(i));
+                pw.println(tablaErrores.get(i));
+            
+           fichero.close();
+            
+             fichero = new FileWriter("./tablaSintaxis.txt");
+            pw = new PrintWriter(fichero);
+
+            for (int i = 0; i < tablaSintaxis.size(); i++)
+                pw.println(tablaSintaxis.get(i));
+            
+             fichero.close();
+            
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-           try {
-           // Nuevamente aprovechamos el finally para 
-           // asegurarnos que se cierra el fichero.
-           if (null != fichero){
-              fichero.close();
-              fichero2.close();
-           }
-           } catch (Exception e2) {
-              e2.printStackTrace();
-           }
         }
     }
 }
