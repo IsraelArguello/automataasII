@@ -18,14 +18,17 @@ import java.util.ArrayList;
 public class Sintaxis {
 
     private int avanza, numLinea;
-    private ArrayList<String> arregloTokens;
-    private String arregloCadenas[], tipos[];
+    private final ArrayList<String> arregloTokens;
+    private String arregloCadenas[];
+    private final String tipos[],opAritmeticos[],opRelacionales[];
 
     public Sintaxis() {
         avanza = 0;
         numLinea = 0;
-        arregloTokens = new ArrayList<String>();
+        arregloTokens = new ArrayList<>();
         tipos = new String[]{"integer", "real", "string"};
+        opAritmeticos=new String[]{"+","-","*","/","%"};
+        opRelacionales= new String[]{"<","<=",">",">=","!=","=="};
     }
 
     public void leerArchivo() {
@@ -76,6 +79,7 @@ public class Sintaxis {
     }
 
     private void declararVar() {
+      do{
         if (tipo()) {
             avanza++;
             do {
@@ -104,6 +108,7 @@ public class Sintaxis {
                 }
             } while (arregloTokens.get(avanza).equals(","));
         }
+       } while(tipo());
     }
 
     private void metodo() {
@@ -198,7 +203,23 @@ public class Sintaxis {
     private boolean tipo() {
         for (String tipo : tipos) {
             if (arregloTokens.get(avanza).equals(tipo)) {
-                avanza++;
+                return true;
+            }
+        }
+        return false;
+    }
+    private boolean aritmeticos(){
+        for(String aritmetico:opAritmeticos){
+            if(arregloTokens.get(avanza).equals(aritmetico)){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean relacionales(){
+        for(String relacional:opRelacionales){
+            if(arregloTokens.get(avanza).equals(relacional)){
                 return true;
             }
         }
