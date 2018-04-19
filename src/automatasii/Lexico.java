@@ -343,7 +343,7 @@ public class Lexico {
         for (int i = 0; i < aritmeticos.length; i++) {
             if (palabra[iGlobal] == aritmeticos[i]) {
                 tablaToken.add("\t" + palabra[iGlobal] + "\t\t\t" + (i + 201) + "\t\t\t\t\t-1\t\t\t\t" + numLin);
-                tablaSintaxis.add(token+"$"+(i + 201) +"$-1$"+numLin);
+                tablaSintaxis.add(palabra[iGlobal]+"$"+(i + 201) +"$-1$"+numLin);
                 iGlobal++;
                 return true;
             }

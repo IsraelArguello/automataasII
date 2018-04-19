@@ -1,5 +1,5 @@
 program #hola {
 integer #i[];
 1+1;
-$hols
+$hols;
 }

@@ -52,7 +52,7 @@ public class Sintaxis {
                 }
 
             }
-            prog(arregloTokens.get(arregloCadena[0]));
+            prog(arregloTokens.get(0)[0]);
             br.close();
         } catch (IOException e) {
             System.out.println("Archivo no encontrado");
@@ -63,7 +63,7 @@ public class Sintaxis {
     private void prog(String cadena) {
         if (cadena.equals("program")) {
             avanza++;
-            if (arregloTokens.get(avanza).contains("#")) {
+            if (arregloTokens.get(avanza)[1].equals("100")) {
                 avanza++;
                 declararVar();
                 metodo();
@@ -82,21 +82,21 @@ public class Sintaxis {
         }
     }
 
-    private void declararVar() {
+    private void declararVar() {    
       do{
         if (tipo()) {
             avanza++;
             do {
-                if (arregloTokens.get(avanza).contains("#")) {
+                if (arregloTokens.get(avanza)[1].equals("100")) {
                     avanza++;
-                    if (arregloTokens.get(avanza).contains("[")) {
+                    if (arregloTokens.get(avanza)[0].contains("[")) {
                         do {
                             avanza++;
                             //Metodo constante
                         } while (arregloTokens.get(avanza).equals(","));
-                        if (arregloTokens.get(avanza).contains("]")) {
+                        if (arregloTokens.get(avanza)[0].contains("]")) {
                             avanza++;
-                            if (arregloTokens.get(avanza).contains(";")) {
+                            if (arregloTokens.get(avanza)[0].contains(";")) {
                                 avanza++;
                             } else {
                                 error("Se esperaba ;");
@@ -105,7 +105,7 @@ public class Sintaxis {
                             error("Se esperaba ]");
                         }
                     } else {
-                        if (arregloTokens.get(avanza).contains(";")) {
+                        if (arregloTokens.get(avanza)[0].contains(";")) {
                             avanza++;
                         }
                     }
@@ -119,16 +119,16 @@ public class Sintaxis {
         do {
             if (arregloTokens.get(avanza).equals("procedure")) {
                 avanza++;
-                if (arregloTokens.get(avanza).contains("#")) {
+                if (arregloTokens.get(avanza)[0].contains("#")) {
                     avanza++;
                     if (arregloTokens.get(avanza).equals("(")) {
                         avanza++;
                         do {
                             if (tipo()) {
                                 avanza++;
-                                if (arregloTokens.get(avanza).contains("#")) {
+                                if (arregloTokens.get(avanza)[0].contains("#")) {
                                     avanza++;
-                                    if (arregloTokens.get(avanza).equals(")")) {
+                                    if (arregloTokens.get(avanza)[0].equals(")")) {
                                         avanza++;
                                         declararVar();
                                         if (arregloTokens.get(avanza).equals("{")) {
@@ -162,7 +162,7 @@ public class Sintaxis {
 
     private void estatuto() {
         do {
-            if (arregloTokens.get(avanza).contains("#")) {
+            if (arregloTokens.get(avanza)[0].contains("#")) {
                 avanza++;
                 //asigna();
             } else {
@@ -201,7 +201,7 @@ public class Sintaxis {
         } while (arregloTokens.get(avanza).equals("call") || arregloTokens.get(avanza).equals("while")
                 || arregloTokens.get(avanza).equals("repeat") || arregloTokens.get(avanza).equals("if")
                 || arregloTokens.get(avanza).equals("output") || arregloTokens.get(avanza).equals("input")
-                || arregloTokens.get(avanza).contains("#"));
+                || arregloTokens.get(avanza)[0].contains("#"));
     }
 
     private boolean tipo() {
