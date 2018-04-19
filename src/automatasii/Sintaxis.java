@@ -18,7 +18,8 @@ import java.util.ArrayList;
 public class Sintaxis {
 
     private int avanza, numLinea;
-    private final ArrayList<String> arregloTokens;
+    private final ArrayList<String[]> arregloTokens;
+    private ArrayList<String> tablaSimbolos,tablaDirecciones;
     private String arregloCadenas[];
     private final String tipos[],opAritmeticos[],opRelacionales[];
 
@@ -26,29 +27,32 @@ public class Sintaxis {
         avanza = 0;
         numLinea = 0;
         arregloTokens = new ArrayList<>();
+        tablaSimbolos= new ArrayList<>();
+        tablaDirecciones= new ArrayList<>();
         tipos = new String[]{"integer", "real", "string"};
         opAritmeticos=new String[]{"+","-","*","/","%"};
         opRelacionales= new String[]{"<","<=",">",">=","!=","=="};
     }
 
     public void leerArchivo() {
+        tablaSimbolos.add("Id\tToken\tDim1\tDim2\tAmbito");
+        tablaDirecciones.add("Id\tToken\t#Linea\tVCI");
         String cadena = "";
         FileReader fr = null;
         try {
             File file = new File("./tablaSintaxis.txt");
             fr = new FileReader(file);
             BufferedReader br = new BufferedReader(fr);
-            int i = 0;
             while (br.ready()) {
                 cadena = br.readLine();
                 if (!cadena.equals("")) {
                     arregloCadenas = cadena.split("\\$");
-                    arregloTokens.add(arregloCadenas[0]);
-                    i++;
+                    arregloTokens.add(arregloCadenas);
+                    numLinea++;
                 }
 
             }
-            prog(arregloTokens.get(0));
+            prog(arregloTokens.get(arregloCadena[0]));
             br.close();
         } catch (IOException e) {
             System.out.println("Archivo no encontrado");
