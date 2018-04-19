@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  *
@@ -17,12 +18,13 @@ import java.io.IOException;
 public class Sintaxis {
 
     private int avanza, numLinea;
-    private String arregloTokens[], arregloCadenas[];;
-
+    private ArrayList<String> arregloTokens;
+    private String arregloCadenas[];
+    
     public Sintaxis() {
         avanza = 0;
         numLinea = 0;
-        arregloTokens = new String[1000];
+        arregloTokens = new ArrayList<String>();
     }
 
     public void leerArchivo() {
@@ -37,13 +39,13 @@ public class Sintaxis {
                 cadena = br.readLine();
                 if (!cadena.equals("")) {
                     arregloCadenas = cadena.split("\\$");
-                    arregloTokens[i] = arregloCadenas[0];
+                    arregloTokens.add(arregloCadenas[0]);
                     i++;
                 }
               
 
             }
-            prog(arregloTokens[0]);
+            prog(arregloTokens.get(0));
             br.close();
         } catch (IOException e) {
             System.out.println("Archivo no encontrado");
@@ -54,14 +56,14 @@ public class Sintaxis {
     private void prog(String cadena) {
         if (cadena.equals("program")) {
             avanza++;
-            if (arregloTokens[avanza].contains("#")) {
+            if (arregloTokens.get(avanza).contains("#")) {
                 avanza++;
                 declararVar();
                 //metodo metodos
-                if (arregloTokens[avanza].equals("{")) {
+                if (arregloTokens.get(avanza).equals("{")) {
                     avanza++;
                     //metodo estatutos
-                    if (arregloTokens[avanza].equals("}")) {
+                    if (arregloTokens.get(avanza).equals("}")) {
                         avanza++;
                     } else {
                         error("Error: se esperaba una }");
@@ -71,20 +73,20 @@ public class Sintaxis {
         }
     }
 
-    private void declararVar() {
-        if (tipo()) {
+    private void declararVar() { 
+       if (tipo()) {
             avanza++;
             do{
-            if (arregloTokens[avanza].contains("#")) {
+            if (arregloTokens.get(avanza).contains("#")) {
                 avanza++;
-                if (arregloTokens[avanza].contains("[")) {
+                if (arregloTokens.get(avanza).contains("[")) {
                     do {
                         avanza++;
                         //Metodo constante
-                    } while (arregloTokens[avanza].equals(","));
-                    if (arregloTokens[avanza].contains("]")) {
+                    } while (arregloTokens.get(avanza).equals(","));
+                    if (arregloTokens.get(avanza).contains("]")) {
                         avanza++;
-                        if (arregloTokens[avanza].contains(";")) {
+                        if (arregloTokens.get(avanza).contains(";")) {
                             avanza++;
                         } else {
                             error("Se esperaba ;");
@@ -93,23 +95,23 @@ public class Sintaxis {
                         error("Se esperaba ]");
                     }
                 }else{
-                    if(arregloTokens[avanza].contains(";")){
+                    if(arregloTokens.get(avanza).contains(";")){
                         avanza++;
                     }
                 }
             }
-            }while(arregloTokens[avanza].equals(","));
+            }while(arregloTokens.get(avanza).equals(","));
         }
     }
 
     private boolean tipo() {
-        if (arregloTokens[avanza].equals("integer")) {
+        if (arregloTokens.get(avanza).equals("integer")) {
             avanza++;
             return true;
-        } else if (arregloTokens[avanza].equals("real")) {
+        } else if (arregloTokens.get(avanza).equals("real")) {
             avanza++;
             return true;
-        } else if (arregloTokens[avanza].equals("string")) {
+        } else if (arregloTokens.get(avanza).equals("string")) {
             avanza++;
             return true;
         }
