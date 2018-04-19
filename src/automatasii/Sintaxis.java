@@ -19,13 +19,13 @@ public class Sintaxis {
 
     private int avanza, numLinea;
     private ArrayList<String> arregloTokens;
-    private String arregloCadenas[],tipos[];
-    
+    private String arregloCadenas[], tipos[];
+
     public Sintaxis() {
         avanza = 0;
         numLinea = 0;
         arregloTokens = new ArrayList<String>();
-        tipos=new String[]{"integer","real","string"};
+        tipos = new String[]{"integer", "real", "string"};
     }
 
     public void leerArchivo() {
@@ -43,7 +43,6 @@ public class Sintaxis {
                     arregloTokens.add(arregloCadenas[0]);
                     i++;
                 }
-              
 
             }
             prog(arregloTokens.get(0));
@@ -60,7 +59,7 @@ public class Sintaxis {
             if (arregloTokens.get(avanza).contains("#")) {
                 avanza++;
                 declararVar();
-                //metodo metodos
+                metodo();
                 if (arregloTokens.get(avanza).equals("{")) {
                     avanza++;
                     //metodo estatutos
@@ -69,44 +68,44 @@ public class Sintaxis {
                     } else {
                         error("Error: se esperaba una }");
                     }
-                }else{
-                   error("Error: se esperaba una {");
+                } else {
+                    error("Error: se esperaba una {");
                 }
             }
         }
     }
 
-    private void declararVar() { 
-       if (tipo()) {
+    private void declararVar() {
+        if (tipo()) {
             avanza++;
-            do{
-            if (arregloTokens.get(avanza).contains("#")) {
-                avanza++;
-                if (arregloTokens.get(avanza).contains("[")) {
-                    do {
-                        avanza++;
-                        //Metodo constante
-                    } while (arregloTokens.get(avanza).equals(","));
-                    if (arregloTokens.get(avanza).contains("]")) { 
-                        avanza++;
+            do {
+                if (arregloTokens.get(avanza).contains("#")) {
+                    avanza++;
+                    if (arregloTokens.get(avanza).contains("[")) {
+                        do {
+                            avanza++;
+                            //Metodo constante
+                        } while (arregloTokens.get(avanza).equals(","));
+                        if (arregloTokens.get(avanza).contains("]")) {
+                            avanza++;
+                            if (arregloTokens.get(avanza).contains(";")) {
+                                avanza++;
+                            } else {
+                                error("Se esperaba ;");
+                            }
+                        } else {
+                            error("Se esperaba ]");
+                        }
+                    } else {
                         if (arregloTokens.get(avanza).contains(";")) {
                             avanza++;
-                        } else {
-                            error("Se esperaba ;");
                         }
-                    }else{
-                        error("Se esperaba ]");
-                    }
-                }else{
-                    if(arregloTokens.get(avanza).contains(";")){
-                        avanza++;
                     }
                 }
-            }
-            }while(arregloTokens.get(avanza).equals(","));
+            } while (arregloTokens.get(avanza).equals(","));
         }
     }
-    
+
     private void metodo() {
         do {
             if (arregloTokens.get(avanza).equals("procedure")) {
@@ -120,38 +119,81 @@ public class Sintaxis {
                                 avanza++;
                                 if (arregloTokens.get(avanza).contains("#")) {
                                     avanza++;
-                                    if(arregloTokens.get(avanza).equals(")")){
+                                    if (arregloTokens.get(avanza).equals(")")) {
                                         avanza++;
                                         declararVar();
-                                        if(arregloTokens.get(avanza).equals("{")){
+                                        if (arregloTokens.get(avanza).equals("{")) {
                                             avanza++;
-                                            //estauto
-                                            if(arregloTokens.get(avanza).equals("}")){
+                                            estatuto();
+                                            if (arregloTokens.get(avanza).equals("}")) {
                                                 avanza++;
-                                            }else{
+                                            } else {
                                                 error("Error: se esperaba una }");
                                             }
-                                        }else{
+                                        } else {
                                             error("Error: se esperaba una {");
                                         }
-                                    }else{
+                                    } else {
                                         error("Error: se esperaba una )");
                                     }
-                                }else{
+                                } else {
                                     error("Error: se esperaba un identificador");
                                 }
                             }
                         } while (arregloTokens.get(avanza).equals(","));
-                    }else{
+                    } else {
                         error("Error: se esperaba una (");
                     }
-                }else{
+                } else {
                     error("Error: se esperaba un identificador");
                 }
             }
         } while (arregloTokens.get(avanza).equals("procedure"));
     }
 
+    private void estatuto() {
+        do {
+            if (arregloTokens.get(avanza).contains("#")) {
+                avanza++;
+                //asigna();
+            } else {
+                if (arregloTokens.get(avanza).equals("input")) {
+                    avanza++;
+                    //leer();
+                } else {
+                    if (arregloTokens.get(avanza).equals("output")) {
+                        avanza++;
+                        //escribir();
+                    } else {
+                        if (arregloTokens.get(avanza).equals("if")) {
+                            avanza++;
+                            //si();
+                        } else {
+                            if (arregloTokens.get(avanza).equals("repeat")) {
+                                avanza++;
+                                //repetir();
+                            } else {
+                                if (arregloTokens.get(avanza).equals("while")) {
+                                    avanza++;
+                                    //mientras();
+                                } else {
+                                    if (arregloTokens.get(avanza).equals("call")) {
+                                        avanza++;
+                                        //ejecutar();
+                                    } else {
+                                        error("Error: Se esperaba un estatuto");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } while (arregloTokens.get(avanza).equals("call") || arregloTokens.get(avanza).equals("while")
+                || arregloTokens.get(avanza).equals("repeat") || arregloTokens.get(avanza).equals("if")
+                || arregloTokens.get(avanza).equals("output") || arregloTokens.get(avanza).equals("input")
+                || arregloTokens.get(avanza).contains("#"));
+    }
 
     private boolean tipo() {
         for (String tipo : tipos) {
@@ -160,8 +202,8 @@ public class Sintaxis {
                 return true;
             }
         }
-            return false;
-        }
+        return false;
+    }
 
     private void error(String error) {
         System.out.println(error + "\nLinea:" + arregloCadenas[3]);
