@@ -1,3 +1,5 @@
-//hola 
-puto// "hola adios 750 #"  
-// //
+program #hola {
+integer #i;
+1+1;
+$hols
+}

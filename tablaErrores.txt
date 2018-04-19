@@ -1,1 +1,3 @@
 	N° Consecutivo		Error		N° Linea
+	1			$			4
+	2			hols			4

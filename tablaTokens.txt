@@ -1,4 +1,12 @@
 	Palabra			N° Token			Posicion en tabla			N° Linea
-	//hola  puto//			700					-1				2
-	"hola adios 750 #"			1000					-1				2
-	// //			700					-1				3
+	program			501					-1				1
+	#hola			100			-2			1
+	{			608					-1				1
+	integer			506					-1				2
+	#i			100			-2			2
+	;			603					-1				2
+	1			800					-1				3
+	+			202					-1				3
+	1			800					-1				3
+	;			603					-1				3
+	}			609					-1				5
