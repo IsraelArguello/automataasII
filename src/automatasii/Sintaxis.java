@@ -19,12 +19,13 @@ public class Sintaxis {
 
     private int avanza, numLinea;
     private ArrayList<String> arregloTokens;
-    private String arregloCadenas[];
+    private String arregloCadenas[],tipos[];
     
     public Sintaxis() {
         avanza = 0;
         numLinea = 0;
         arregloTokens = new ArrayList<String>();
+        tipos=new String[]{"integer","real","string"};
     }
 
     public void leerArchivo() {
@@ -68,6 +69,8 @@ public class Sintaxis {
                     } else {
                         error("Error: se esperaba una }");
                     }
+                }else{
+                   error("Error: se esperaba una {");
                 }
             }
         }
@@ -84,7 +87,7 @@ public class Sintaxis {
                         avanza++;
                         //Metodo constante
                     } while (arregloTokens.get(avanza).equals(","));
-                    if (arregloTokens.get(avanza).contains("]")) {
+                    if (arregloTokens.get(avanza).contains("]")) { 
                         avanza++;
                         if (arregloTokens.get(avanza).contains(";")) {
                             avanza++;
@@ -103,20 +106,62 @@ public class Sintaxis {
             }while(arregloTokens.get(avanza).equals(","));
         }
     }
+    
+    private void metodo() {
+        do {
+            if (arregloTokens.get(avanza).equals("procedure")) {
+                avanza++;
+                if (arregloTokens.get(avanza).contains("#")) {
+                    avanza++;
+                    if (arregloTokens.get(avanza).equals("(")) {
+                        avanza++;
+                        do {
+                            if (tipo()) {
+                                avanza++;
+                                if (arregloTokens.get(avanza).contains("#")) {
+                                    avanza++;
+                                    if(arregloTokens.get(avanza).equals(")")){
+                                        avanza++;
+                                        declararVar();
+                                        if(arregloTokens.get(avanza).equals("{")){
+                                            avanza++;
+                                            //estauto
+                                            if(arregloTokens.get(avanza).equals("}")){
+                                                avanza++;
+                                            }else{
+                                                error("Error: se esperaba una }");
+                                            }
+                                        }else{
+                                            error("Error: se esperaba una {");
+                                        }
+                                    }else{
+                                        error("Error: se esperaba una )");
+                                    }
+                                }else{
+                                    error("Error: se esperaba un identificador");
+                                }
+                            }
+                        } while (arregloTokens.get(avanza).equals(","));
+                    }else{
+                        error("Error: se esperaba una (");
+                    }
+                }else{
+                    error("Error: se esperaba un identificador");
+                }
+            }
+        } while (arregloTokens.get(avanza).equals("procedure"));
+    }
+
 
     private boolean tipo() {
-        if (arregloTokens.get(avanza).equals("integer")) {
-            avanza++;
-            return true;
-        } else if (arregloTokens.get(avanza).equals("real")) {
-            avanza++;
-            return true;
-        } else if (arregloTokens.get(avanza).equals("string")) {
-            avanza++;
-            return true;
+        for (String tipo : tipos) {
+            if (arregloTokens.get(avanza).equals(tipo)) {
+                avanza++;
+                return true;
+            }
         }
-        return false;
-    }
+            return false;
+        }
 
     private void error(String error) {
         System.out.println(error + "\nLinea:" + arregloCadenas[3]);
