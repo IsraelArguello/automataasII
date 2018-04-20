@@ -1,4 +1,6 @@
-program #hola integer #i[]
+program #hola 
+integer #i[-1];
+{
 1+1;
 $hols;
 }

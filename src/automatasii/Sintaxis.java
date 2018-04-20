@@ -19,19 +19,19 @@ public class Sintaxis {
 
     private int avanza, numLinea;
     private final ArrayList<String[]> arregloTokens;
-    private ArrayList<String> tablaSimbolos,tablaDirecciones;
+    private ArrayList<String> tablaSimbolos, tablaDirecciones;
     private String arregloCadenas[];
-    private final String tipos[],opAritmeticos[],opRelacionales[];
+    private final String tipos[], opAritmeticos[], opRelacionales[];
 
     public Sintaxis() {
         avanza = 0;
         numLinea = 0;
         arregloTokens = new ArrayList<>();
-        tablaSimbolos= new ArrayList<>();
-        tablaDirecciones= new ArrayList<>();
+        tablaSimbolos = new ArrayList<>();
+        tablaDirecciones = new ArrayList<>();
         tipos = new String[]{"integer", "real", "string"};
-        opAritmeticos=new String[]{"+","-","*","/","%"};
-        opRelacionales= new String[]{"<","<=",">",">=","!=","=="};
+        opAritmeticos = new String[]{"+", "-", "*", "/", "%"};
+        opRelacionales = new String[]{"<", "<=", ">", ">=", "!=", "=="};
     }
 
     public void leerArchivo() {
@@ -42,18 +42,18 @@ public class Sintaxis {
         try {
             File file = new File("./tablaSintaxis.txt");
             fr = new FileReader(file);
-            BufferedReader br = new BufferedReader(fr);
-            while (br.ready()) {
-                cadena = br.readLine();
-                if (!cadena.equals("")) {
-                    arregloCadenas = cadena.split("\\$");
-                    arregloTokens.add(arregloCadenas);
-                    numLinea++;
+            try (BufferedReader br = new BufferedReader(fr)) {
+                while (br.ready()) {
+                    cadena = br.readLine();
+                    if (!cadena.equals("")) {
+                        arregloCadenas = cadena.split("\\$");
+                        arregloTokens.add(arregloCadenas);
+                        numLinea++;
+                    }
+                    
                 }
-
+                prog(arregloTokens.get(0)[0]);
             }
-            prog(arregloTokens.get(0)[0]);
-            br.close();
         } catch (IOException e) {
             System.out.println("Archivo no encontrado");
         }
@@ -82,37 +82,39 @@ public class Sintaxis {
         }
     }
 
-    private void declararVar() {    
-      do{
-        if (tipo()) {
-            avanza++;
-            do {
-                if (arregloTokens.get(avanza)[1].equals("100")) {
-                    avanza++;
-                    if (arregloTokens.get(avanza)[0].contains("[")) {
-                        do {
-                            avanza++;
-                            //Metodo constante
-                        } while (arregloTokens.get(avanza)[0].equals(","));
-                        if (arregloTokens.get(avanza)[0].contains("]")) {
-                            avanza++;
-                            if (arregloTokens.get(avanza)[0].contains(";")) {
+    private void declararVar() {
+        do {
+            if (tipo()) {
+                avanza++;
+                do {
+                    if (arregloTokens.get(avanza)[1].equals("100")) {
+                        avanza++;
+                        if (arregloTokens.get(avanza)[0].contains("[")) {
+                            do {
                                 avanza++;
+                                if(arregloTokens.get(avanza)[1].equals("800")){
+                                    avanza++;
+                                }else{
+                                    error("Se esperaba una constante entera");
+                                }
+                            } while (arregloTokens.get(avanza)[0].equals(","));
+                            if (arregloTokens.get(avanza)[0].contains("]")) {
+                                avanza++;
+                                if (arregloTokens.get(avanza)[0].contains(";")) {
+                                    avanza++;
+                                } else {
+                                    error("Se esperaba ;");
+                                }
                             } else {
-                                error("Se esperaba ;");
+                                error("Se esperaba ]");
                             }
-                        } else {
-                            error("Se esperaba ]");
-                        }
-                    } else {
-                        if (arregloTokens.get(avanza)[0].contains(";")) {
+                        } else if (arregloTokens.get(avanza)[0].contains(";")) {
                             avanza++;
                         }
                     }
-                }
-            } while (arregloTokens.get(avanza)[0].equals(","));
-        }
-       } while(tipo());
+                } while (arregloTokens.get(avanza)[0].equals(","));
+            }
+        } while (tipo());
     }
 
     private void metodo() {
@@ -165,38 +167,26 @@ public class Sintaxis {
             if (arregloTokens.get(avanza)[0].contains("#")) {
                 avanza++;
                 //asigna();
+            } else if (arregloTokens.get(avanza)[0].equals("input")) {
+                avanza++;
+                //leer();
+            } else if (arregloTokens.get(avanza)[0].equals("output")) {
+                avanza++;
+                //escribir();
+            } else if (arregloTokens.get(avanza)[0].equals("if")) {
+                avanza++;
+                //si();
+            } else if (arregloTokens.get(avanza)[0].equals("repeat")) {
+                avanza++;
+                //repetir();
+            } else if (arregloTokens.get(avanza)[0].equals("while")) {
+                avanza++;
+                //mientras();
+            } else if (arregloTokens.get(avanza)[0].equals("call")) {
+                avanza++;
+                //ejecutar();
             } else {
-                if (arregloTokens.get(avanza)[0].equals("input")) {
-                    avanza++;
-                    //leer();
-                } else {
-                    if (arregloTokens.get(avanza)[0].equals("output")) {
-                        avanza++;
-                        //escribir();
-                    } else {
-                        if (arregloTokens.get(avanza)[0].equals("if")) {
-                            avanza++;
-                            //si();
-                        } else {
-                            if (arregloTokens.get(avanza)[0].equals("repeat")) {
-                                avanza++;
-                                //repetir();
-                            } else {
-                                if (arregloTokens.get(avanza)[0].equals("while")) {
-                                    avanza++;
-                                    //mientras();
-                                } else {
-                                    if (arregloTokens.get(avanza)[0].equals("call")) {
-                                        avanza++;
-                                        //ejecutar();
-                                    } else {
-                                        error("Error: Se esperaba un estatuto");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                error("Error: Se esperaba un estatuto");
             }
         } while (arregloTokens.get(avanza)[0].equals("call") || arregloTokens.get(avanza)[0].equals("while")
                 || arregloTokens.get(avanza)[0].equals("repeat") || arregloTokens.get(avanza)[0].equals("if")
@@ -212,26 +202,33 @@ public class Sintaxis {
         }
         return false;
     }
-    private boolean aritmeticos(){
-        for(String aritmetico:opAritmeticos){
-            if(arregloTokens.get(avanza)[0].equals(aritmetico)){
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean relacionales(){
-        for(String relacional:opRelacionales){
-            if(arregloTokens.get(avanza)[0].equals(relacional)){
+
+    private boolean aritmeticos() {
+        for (String aritmetico : opAritmeticos) {
+            if (arregloTokens.get(avanza)[0].equals(aritmetico)) {
                 return true;
             }
         }
         return false;
     }
 
+    private boolean relacionales() {
+        for (String relacional : opRelacionales) {
+            if (arregloTokens.get(avanza)[0].equals(relacional)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean constante() {
+        return arregloTokens.get(avanza)[1].equals("800") || arregloTokens.get(avanza)[1].equals("1000")
+                || arregloTokens.get(avanza)[1].equals("900");
+    }
+
     private void error(String error) {
         System.out.println(error + "\nLinea:" + arregloTokens.get(avanza)[3]);
+        System.exit(0);
     }
 
 }
