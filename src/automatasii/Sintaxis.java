@@ -162,6 +162,43 @@ public class Sintaxis {
         } while (arregloTokens.get(avanza)[0].equals("procedure"));
     }
 
+    private void idArreglo() {
+        if (arregloTokens.get(avanza)[1].equals("100")) {
+            avanza++;
+            if (arregloTokens.get(avanza)[0].equals("[")) {
+                avanza++;
+                do {
+                    if (arregloTokens.get(avanza)[1].equals("101") || arregloTokens.get(avanza)[1].equals("800")) {
+                        avanza++;
+                    } else {
+                        error("Se esperaba una o más variable entera");
+                    }
+                } while (arregloTokens.get(avanza)[0].equals(","));
+
+                if (arregloTokens.get(avanza)[0].equals("]")) {
+                    avanza++;
+                } else {
+                    error("Se esperaba ]");
+                }
+            }
+        }
+    }
+   
+    public void asigna(){
+        idArreglo();
+        if(arregloTokens.get(avanza)[0].equals("=")){
+            avanza++;
+            //metodo expresiones aritmeticas
+            if(arregloTokens.get(avanza)[0].equals(";")){
+                avanza++;
+            }else{
+                error("Se esperaba ;");
+            }
+        }else{
+            error("Se esperaba =");
+        }
+    }
+    
     private void estatuto() {
         do {
             if (arregloTokens.get(avanza)[0].contains("#")) {
