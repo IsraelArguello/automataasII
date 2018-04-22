@@ -224,10 +224,10 @@ public class Sintaxis {
                 repetir();
             } else if (arregloTokens.get(avanza)[0].equals("while")) {
                 avanza++;
-                //mientras();
+                mientras();
             } else if (arregloTokens.get(avanza)[0].equals("call")) {
                 avanza++;
-                //ejecutar();
+                ejecutar();
             } else {
                 error("Error: Se esperaba un estatuto");
             }
@@ -392,7 +392,65 @@ public class Sintaxis {
                 error("Se esperaba un {");
             }
         } else {
-            error("Se esperaba el estatuto repeat");
+            error("Se esperaba el estatuto repetir");
+        }
+    }
+
+    private void mientras() {
+        if (arregloTokens.get(avanza)[0].equals("while")) {
+            avanza++;
+            //condicion();
+            if (arregloTokens.get(avanza)[0].equals("{")) {
+                avanza++;
+                estatuto();
+                if (arregloTokens.get(avanza)[0].equals("}")) {
+                    avanza++;
+                    if (arregloTokens.get(avanza)[0].equals(";")) {
+                        avanza++;
+                    } else {
+                        error("Se esperaba un ;");
+                    }
+                } else {
+                    error("Se esperaba un }");
+                }
+            } else {
+                error("Se esperana un {");
+            }
+        } else {
+            error("Se esperaba el estatuto mientras");
+        }
+    }
+
+    private void ejecutar() {
+        if (arregloTokens.get(avanza)[0].equals("call")) {
+            avanza++;
+            if (arregloTokens.get(avanza)[1].equals("101")) {
+                avanza++;
+                if (arregloTokens.get(avanza)[0].equals("(")) {
+                    do {
+                        avanza++;
+                        if (arregloTokens.get(avanza)[1].equals("100")) {
+                            avanza++;
+                        } else {
+                            error("Se esperaba un identificador");
+                        }
+                    } while (arregloTokens.get(avanza)[0].equals(","));
+                    if (arregloTokens.get(avanza)[0].equals(")")) {
+                        avanza++;
+                    } else {
+                        error("Se esperaba un )");
+                    }
+                }
+                if (arregloTokens.get(avanza)[0].equals(";")) {
+                    avanza++;
+                } else {
+                    error("Se esperaba un ;");
+                }
+            } else {
+                error("Se esperaba un identificador de metodo");
+            }
+        } else {
+            error("Se esperaba el estatuto llamar");
         }
     }
 }
