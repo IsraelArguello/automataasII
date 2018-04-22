@@ -84,9 +84,13 @@ public class Sintaxis {
 
     private void declararVar() {
         do {
+
             if (tipo()) {
                 avanza++;
                 do {
+                    if (arregloTokens.get(avanza)[0].equals(",")) {
+                        avanza++;
+                    }
                     if (arregloTokens.get(avanza)[1].equals("100")) {
                         avanza++;
                         if (arregloTokens.get(avanza)[0].contains("[")) {
@@ -97,7 +101,7 @@ public class Sintaxis {
                                 } else {
                                     error("Se esperaba una constante entera");
                                 }
-                            } while (arregloTokens.get(avanza++)[0].equals(","));
+                            } while (arregloTokens.get(avanza)[0].equals(","));
                             if (arregloTokens.get(avanza)[0].contains("]")) {
                                 avanza++;
                                 if (arregloTokens.get(avanza)[0].contains(";")) {
@@ -112,7 +116,7 @@ public class Sintaxis {
                             avanza++;
                         }
                     }
-                } while (arregloTokens.get(avanza++)[0].equals(","));
+                } while (arregloTokens.get(avanza)[0].equals(","));
             }
         } while (tipo());
     }
@@ -124,8 +128,8 @@ public class Sintaxis {
                 if (arregloTokens.get(avanza)[0].contains("#")) {
                     avanza++;
                     if (arregloTokens.get(avanza)[0].equals("(")) {
-                        avanza++;
                         do {
+                            avanza++;
                             if (tipo()) {
                                 avanza++;
                                 if (arregloTokens.get(avanza)[0].contains("#")) {
@@ -151,7 +155,7 @@ public class Sintaxis {
                                     error("Error: se esperaba un identificador");
                                 }
                             }
-                        } while (arregloTokens.get(avanza++)[0].equals(","));
+                        } while (arregloTokens.get(avanza)[0].equals(","));
                     } else {
                         error("Error: se esperaba una (");
                     }
@@ -166,14 +170,14 @@ public class Sintaxis {
         if (arregloTokens.get(avanza)[1].equals("100")) {
             avanza++;
             if (arregloTokens.get(avanza)[0].equals("[")) {
-                avanza++;
                 do {
+                    avanza++;
                     if (arregloTokens.get(avanza)[1].equals("101") || arregloTokens.get(avanza)[1].equals("800")) {
                         avanza++;
                     } else {
                         error("Se esperaba una o más variable entera");
                     }
-                } while (arregloTokens.get(avanza++)[0].equals(","));
+                } while (arregloTokens.get(avanza)[0].equals(","));
 
                 if (arregloTokens.get(avanza)[0].equals("]")) {
                     avanza++;
@@ -211,10 +215,10 @@ public class Sintaxis {
                 leer();
             } else if (arregloTokens.get(avanza)[0].equals("output")) {
                 avanza++;
-                //escribir();
+                escribir();
             } else if (arregloTokens.get(avanza)[0].equals("if")) {
                 avanza++;
-                //si();
+                si();
             } else if (arregloTokens.get(avanza)[0].equals("repeat")) {
                 avanza++;
                 //repetir();
@@ -274,19 +278,79 @@ public class Sintaxis {
         if (arregloTokens.get(avanza)[0].equals("input")) {
             avanza++;
             if (arregloTokens.get(avanza)[0].equals("(")) {
-                avanza++;
                 do {
+                    avanza++;
                     idArreglo();
-                } while (arregloTokens.get(avanza++)[0].equals(","));
+                } while (arregloTokens.get(avanza)[0].equals(","));
                 if (arregloTokens.get(avanza)[0].equals(")")) {
-                     avanza++;
-                     if(arregloTokens.get(avanza)[0].equals(";")){
-                         avanza++;
-                     }
+                    avanza++;
+                    if (arregloTokens.get(avanza)[0].equals(";")) {
+                        avanza++;
+                    } else {
+                        error("Se esperaba un ;");
+                    }
+                } else {
+                    error("Se esperaba un )");
                 }
-
+            } else {
+                error("Se esperaba un (");
             }
+        } else {
+            error("Se esperaba un input");
         }
     }
 
+    private void escribir() {
+        if (arregloTokens.get(avanza)[0].equals("output")) {
+            avanza++;
+            if (arregloTokens.get(avanza)[0].equals("(")) {
+                do {
+                    avanza++;
+                    if (arregloTokens.get(avanza)[0].equals(",")) {
+                        avanza++;
+                    }
+                    if (arregloTokens.get(avanza)[1].equals("100")) {
+                        idArreglo();
+                    } else {
+                        if (arregloTokens.get(avanza)[1].equals("800") || arregloTokens.get(avanza)[1].equals("1000")
+                                || arregloTokens.get(avanza)[1].equals("900")) {
+                            constante();
+                        } else {
+                            error("Se esperaba una constante");
+                        }
+                    }
+
+                } while (arregloTokens.get(avanza)[0].equals(","));
+                if (arregloTokens.get(avanza)[0].equals(")")) {
+                    avanza++;
+                    if (arregloTokens.get(avanza)[0].equals(";")) {
+                        avanza++;
+                    } else {
+                        error("Se esperaba un ;");
+                    }
+                } else {
+                    error("Se esperaba un )");
+                }
+            } else {
+                error("Se esperaba un (");
+            }
+        } else {
+            error("Se esperaba un input");
+        }
+    }
+
+    private void si() {
+        if (arregloTokens.get(avanza)[0].equals("if")) {
+            avanza++;
+            //condicion();
+            if (arregloTokens.get(avanza)[0].equals("then")) {
+                avanza++;
+                if (arregloTokens.get(avanza)[0].equals("{")) {
+                    avanza++;
+                    estatuto();
+
+                }
+            }
+        }
+    }
 }
