@@ -221,7 +221,7 @@ public class Sintaxis {
                 si();
             } else if (arregloTokens.get(avanza)[0].equals("repeat")) {
                 avanza++;
-                //repetir();
+                repetir();
             } else if (arregloTokens.get(avanza)[0].equals("while")) {
                 avanza++;
                 //mientras();
@@ -348,9 +348,51 @@ public class Sintaxis {
                 if (arregloTokens.get(avanza)[0].equals("{")) {
                     avanza++;
                     estatuto();
-
+                    if (arregloTokens.get(avanza)[0].equals("else")) {
+                        avanza++;
+                        estatuto();
+                    }
+                    if (arregloTokens.get(avanza)[0].equals("}")) {
+                        avanza++;
+                        if (arregloTokens.get(avanza)[0].equals(";")) {
+                            avanza++;
+                        } else {
+                            error("Se esperaba un ;");
+                        }
+                    } else {
+                        error("Se esperaba un }");
+                    }
+                } else {
+                    error("Se esperaba un }");
                 }
+            } else {
+                error("Se esperana then");
             }
+        }
+    }
+
+    private void repetir() {
+        if (arregloTokens.get(avanza)[0].equals("repeat")) {
+            avanza++;
+            if (arregloTokens.get(avanza)[0].equals("{")) {
+                avanza++;
+                estatuto();
+                if (arregloTokens.get(avanza)[0].equals("}")) {
+                    avanza++;
+                    //condicion();
+                    if (arregloTokens.get(avanza)[0].equals(";")) {
+                        avanza++;
+                    } else {
+                        error("Se esperaba un ;");
+                    }
+                } else {
+                    error("Se esperaba un }");
+                }
+            } else {
+                error("Se esperaba un {");
+            }
+        } else {
+            error("Se esperaba el estatuto repeat");
         }
     }
 }
