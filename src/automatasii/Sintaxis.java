@@ -19,7 +19,7 @@ public class Sintaxis {
 
 	private int avanza, numLinea;
 	private final ArrayList<String[]> arregloTokens;
-	private ArrayList<String> tablaSimbolos, tablaDirecciones;
+	private ArrayList<String> tablaSimbolos,tablaSimbolosPesos, tablaDirecciones,tablaDireccionesPesos;
 	private String arregloCadenas[];
 	private final String tipos[], opAritmeticos[], opRelacionales[], opLogicos[];
 
@@ -28,7 +28,9 @@ public class Sintaxis {
 		numLinea = 0;
 		arregloTokens = new ArrayList<>();
 		tablaSimbolos = new ArrayList<>();
+                tablaSimbolosPesos = new ArrayList<>();
 		tablaDirecciones = new ArrayList<>();
+                tablaDireccionesPesos = new ArrayList<>();
 		tipos = new String[] { "integer", "real", "string" };
 		opAritmeticos = new String[] { "+", "-", "*", "/", "%" };
 		opRelacionales = new String[] { "<", "<=", ">", ">=", "!=", "==" };
@@ -51,7 +53,6 @@ public class Sintaxis {
 						arregloTokens.add(arregloCadenas);
 						numLinea++;
 					}
-
 				}
 				prog(arregloTokens.get(0)[0]);
 			}
@@ -65,7 +66,11 @@ public class Sintaxis {
 		if (cadena.equals("program")) {
 			avanza++;
 			if (arregloTokens.get(avanza)[1].equals("100")) {
-				avanza++;
+                            arregloTokens.get(avanza)[1]="105";
+                            arregloTokens.get(avanza)[2]="0";
+				tablaDirecciones.add(arregloTokens.get(avanza)[0]+"\t"+arregloTokens.get(avanza)[1]+"\t"+arregloTokens.get(avanza)[3]+"\t0");
+                                tablaDireccionesPesos.add(arregloTokens.get(avanza)[0]+"$"+arregloTokens.get(avanza)[1]+"$"+arregloTokens.get(avanza)[3]+"$0");
+                                avanza++;
 				declararVar();
 				metodo();
 				if (arregloTokens.get(avanza)[0].equals("{")) {
@@ -125,6 +130,8 @@ public class Sintaxis {
 	private void metodo() {
 		do {
 			if (arregloTokens.get(avanza)[0].equals("procedure")) {
+                            tablaDirecciones.add(arregloTokens.get(avanza)[0]+"\t"+arregloTokens.get(avanza)[1]+"\t"+arregloTokens.get(avanza)[3]+"\t0");
+                                tablaDireccionesPesos.add(arregloTokens.get(avanza)[0]+"$"+arregloTokens.get(avanza)[1]+"$"+arregloTokens.get(avanza)[3]+"$0");
 				avanza++;
 				if (arregloTokens.get(avanza)[0].contains("#")) {
 					avanza++;
@@ -208,7 +215,7 @@ public class Sintaxis {
 
 	private void exp_Arit() {
 
-		if (arregloTokens.get(avanza)[0].equals("(")) {
+		while (arregloTokens.get(avanza)[0].equals("(")) {
 			avanza++;
 		}
 		if (constante()) {
@@ -216,7 +223,7 @@ public class Sintaxis {
 		} else {
 			idArreglo();
 		}
-		if (arregloTokens.get(avanza)[0].equals(")")) {
+		while (arregloTokens.get(avanza)[0].equals(")")) {
 			avanza++;
 		}
 
@@ -230,7 +237,6 @@ public class Sintaxis {
 	private void estatuto() {
 		do {
 			if (arregloTokens.get(avanza)[1].equals("100")) {
-				avanza++;
 				asigna();
 			} else if (arregloTokens.get(avanza)[0].equals("input")) {
 				avanza++;

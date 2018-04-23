@@ -1,3 +1,1 @@
 	N° Consecutivo		Error		N° Linea
-	1			$			5
-	2			hols			5

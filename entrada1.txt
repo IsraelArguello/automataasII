@@ -1,7 +1,6 @@
 program #hola 
-integer #i[-1];
+integer #i[1];
 {
-1+1;
-$hols;
+#i=1+1;
 }
 
