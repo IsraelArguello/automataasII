@@ -410,7 +410,11 @@ public class Sintaxis {
 				estatuto();
 				if (arregloTokens.get(avanza)[0].equals("}")) {
 					avanza++;
-					//fantal el until
+					if(arregloTokens.get(avanza)[0].equals("until")){
+                                            avanza++;
+                                        }else{
+                                        error("Falta token until");
+                                        }
 					condicion();
 					if (arregloTokens.get(avanza)[0].equals(";")) {
 						avanza++;
