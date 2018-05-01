@@ -16,16 +16,17 @@ import java.util.ArrayList;
  * @author L55-C5211R
  */
 public class Sintaxis {
-
-	private int avanza, numLinea;
+        private String tipo;
+	private int avanza,ambito;
 	private final ArrayList<String[]> arregloTokens;
 	private ArrayList<String> tablaSimbolos,tablaSimbolosPesos, tablaDirecciones,tablaDireccionesPesos;
 	private String arregloCadenas[];
 	private final String tipos[], opAritmeticos[], opRelacionales[], opLogicos[];
 
 	public Sintaxis() {
-		avanza = 0;
-		numLinea = 0;
+		avanza = 0; 
+                tipo="";
+                ambito=0;
 		arregloTokens = new ArrayList<>();
 		tablaSimbolos = new ArrayList<>();
                 tablaSimbolosPesos = new ArrayList<>();
@@ -51,7 +52,6 @@ public class Sintaxis {
 					if (!cadena.equals("")) {
 						arregloCadenas = cadena.split("\\$");
 						arregloTokens.add(arregloCadenas);
-						numLinea++;
 					}
 				}
 				prog(arregloTokens.get(0)[0]);
@@ -68,8 +68,8 @@ public class Sintaxis {
 			if (arregloTokens.get(avanza)[1].equals("100")) {
                             arregloTokens.get(avanza)[1]="105";
                             arregloTokens.get(avanza)[2]="0";
-				tablaDirecciones.add(arregloTokens.get(avanza)[0]+"\t"+arregloTokens.get(avanza)[1]+"\t"+arregloTokens.get(avanza)[3]+"\t0");
-                                tablaDireccionesPesos.add(arregloTokens.get(avanza)[0]+"$"+arregloTokens.get(avanza)[1]+"$"+arregloTokens.get(avanza)[3]+"$0");
+				tablaDirecciones.add(arregloTokens.get(avanza)[0]+"\t"+arregloTokens.get(avanza)[1]+"\t"+arregloTokens.get(avanza)[3]+"\t"+ambito);
+                                tablaDireccionesPesos.add(arregloTokens.get(avanza)[0]+"$"+arregloTokens.get(avanza)[1]+"$"+arregloTokens.get(avanza)[3]+"$"+ambito);
                                 avanza++;
 				declararVar();
 				metodo();
@@ -89,8 +89,10 @@ public class Sintaxis {
 	}
 
 	private void declararVar() {
+            String dims[]=new String[]{"0","0"};
+            String tokenTem="";
+            int i=0;
 		do {
-
 			if (tipo()) {
 				avanza++;
 				do {
@@ -98,12 +100,15 @@ public class Sintaxis {
 						avanza++;
 					}
 					if (arregloTokens.get(avanza)[1].equals("100")) {
-						avanza++;
+                                            tokenTem=arregloTokens.get(avanza)[0];
+                                		avanza++;
 						if (arregloTokens.get(avanza)[0].contains("[")) {
 							do {
 								avanza++;
 								if (arregloTokens.get(avanza)[1].equals("800")) {
+                                                                    dims[i]=arregloTokens.get(avanza)[0];
 									avanza++;
+                                                                        i++;
 								} else {
 									error("Se esperaba una constante entera");
 								}
@@ -112,6 +117,8 @@ public class Sintaxis {
 								avanza++;
 								if (arregloTokens.get(avanza)[0].contains(";")) {
 									avanza++;
+                                                                 tablaSimbolos.add(tokenTem+"\t"+getNumToken()+"\t0\t"+dims[0]+"\t"+dims[1]+"\t"+ambito);
+                                                                 tablaSimbolosPesos.add(tokenTem+"$"+getNumToken()+"$0$"+dims[0]+"$"+dims[1]+"$"+ambito);
 								} else {
 									error("Se esperaba ;");
 								}
@@ -120,6 +127,8 @@ public class Sintaxis {
 							}
 						} else if (arregloTokens.get(avanza)[0].contains(";")) {
 							avanza++;
+                                             tablaSimbolos.add(tokenTem+"\t"+getNumToken()+"\t0\t"+dims[0]+"\t"+dims[1]+"\t"+ambito);
+                                             tablaSimbolosPesos.add(tokenTem+"$"+getNumToken()+"$0$"+dims[0]+"$"+dims[1]+"$"+ambito);
 						}
 					}
 				} while (arregloTokens.get(avanza)[0].equals(","));
@@ -130,9 +139,10 @@ public class Sintaxis {
 	private void metodo() {
 		do {
 			if (arregloTokens.get(avanza)[0].equals("procedure")) {
-                            tablaDirecciones.add(arregloTokens.get(avanza)[0]+"\t"+arregloTokens.get(avanza)[1]+"\t"+arregloTokens.get(avanza)[3]+"\t0");
-                                tablaDireccionesPesos.add(arregloTokens.get(avanza)[0]+"$"+arregloTokens.get(avanza)[1]+"$"+arregloTokens.get(avanza)[3]+"$0");
-				avanza++;
+                            ambito++;
+                            tablaDirecciones.add(arregloTokens.get(avanza)[0]+"\t"+arregloTokens.get(avanza)[1]+"\t"+arregloTokens.get(avanza)[3]+"\t"+ambito);
+                            tablaDireccionesPesos.add(arregloTokens.get(avanza)[0]+"$"+arregloTokens.get(avanza)[1]+"$"+arregloTokens.get(avanza)[3]+"$"+ambito);
+                		avanza++;
 				if (arregloTokens.get(avanza)[0].contains("#")) {
 					avanza++;
 					if (arregloTokens.get(avanza)[0].equals("(")) {
@@ -266,11 +276,13 @@ public class Sintaxis {
 	}
 
 	private boolean tipo() {
-		for (String tipo : tipos) {
-			if (arregloTokens.get(avanza)[0].equals(tipo)) {
-				return true;
-			}
-		}
+            
+            for (String tipo1 : tipos) {
+                if (arregloTokens.get(avanza)[0].equals(tipo1)) {
+                    tipo=arregloTokens.get(avanza)[0];
+                    return true;
+                }
+            }
 		return false;
 	}
 
@@ -520,4 +532,12 @@ public class Sintaxis {
 		}
 
 	}
+
+    private int getNumToken() {
+      for(int x=0;x<tipos.length;x++)
+        if(tipo.equals(tipos[x])){
+            return x+101;
+        }
+      return 100;
+    }
 }
