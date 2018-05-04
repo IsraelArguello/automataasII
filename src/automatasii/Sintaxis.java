@@ -16,7 +16,7 @@ import java.util.ArrayList;
  * @author L55-C5211R
  */
 public class Sintaxis {
-        private String tipo;
+        private int tipo;
 	private int avanza,ambito;
 	private final ArrayList<String[]> arregloTokens;
 	private ArrayList<String> tablaSimbolos,tablaSimbolosPesos, tablaDirecciones,tablaDireccionesPesos;
@@ -25,7 +25,7 @@ public class Sintaxis {
 
 	public Sintaxis() {
 		avanza = 0; 
-                tipo="";
+                tipo=0;
                 ambito=0;
 		arregloTokens = new ArrayList<>();
 		tablaSimbolos = new ArrayList<>();
@@ -91,8 +91,9 @@ public class Sintaxis {
 	private void declararVar() {
             String dims[]=new String[]{"0","0"};
             String tokenTem="";
-            int i=0;
+            int i=0, indexTok=0;
 		do {
+                    dims=new String[]{"0","0"};
 			if (tipo()) {
 				avanza++;
 				do {
@@ -101,6 +102,7 @@ public class Sintaxis {
 					}
 					if (arregloTokens.get(avanza)[1].equals("100")) {
                                             tokenTem=arregloTokens.get(avanza)[0];
+                                            indexTok=avanza;
                                 		avanza++;
 						if (arregloTokens.get(avanza)[0].contains("[")) {
 							do {
@@ -117,8 +119,10 @@ public class Sintaxis {
 								avanza++;
 								if (arregloTokens.get(avanza)[0].contains(";")) {
 									avanza++;
-                                                                 tablaSimbolos.add(tokenTem+"\t"+getNumToken()+"\t0\t"+dims[0]+"\t"+dims[1]+"\t"+ambito);
-                                                                 tablaSimbolosPesos.add(tokenTem+"$"+getNumToken()+"$0$"+dims[0]+"$"+dims[1]+"$"+ambito);
+                                                                 tablaSimbolos.add(tokenTem+"\t"+tipo+"\t0\t"+dims[0]+"\t"+dims[1]+"\t"+ambito);
+                                                                 tablaSimbolosPesos.add(tokenTem+"$"+tipo+"$0$"+dims[0]+"$"+dims[1]+"$"+ambito);
+                                                                 arregloTokens.get(indexTok)[2]=tablaSimbolos.size()-1+"";
+                                                                 arregloTokens.get(indexTok)[1]=tipo+"";
 								} else {
 									error("Se esperaba ;");
 								}
@@ -127,10 +131,15 @@ public class Sintaxis {
 							}
 						} else if (arregloTokens.get(avanza)[0].contains(";")) {
 							avanza++;
-                                             tablaSimbolos.add(tokenTem+"\t"+getNumToken()+"\t0\t"+dims[0]+"\t"+dims[1]+"\t"+ambito);
-                                             tablaSimbolosPesos.add(tokenTem+"$"+getNumToken()+"$0$"+dims[0]+"$"+dims[1]+"$"+ambito);
+                                             tablaSimbolos.add(tokenTem+"\t"+tipo+"\t0\t"+dims[0]+"\t"+dims[1]+"\t"+ambito);
+                                             tablaSimbolosPesos.add(tokenTem+"$"+tipo+"$0$"+dims[0]+"$"+dims[1]+"$"+ambito);
+                                             arregloTokens.get(indexTok)[2]=tablaSimbolos.size()-1+"";
+                                             arregloTokens.get(indexTok)[1]=tipo+"";
+
 						}
-					}
+					}else{
+                                            error("Se esperaba una variable");
+                                        }
 				} while (arregloTokens.get(avanza)[0].equals(","));
 			}
 		} while (tipo());
@@ -139,11 +148,13 @@ public class Sintaxis {
 	private void metodo() {
 		do {
 			if (arregloTokens.get(avanza)[0].equals("procedure")) {
+                            avanza++;
                             ambito++;
-                            tablaDirecciones.add(arregloTokens.get(avanza)[0]+"\t"+arregloTokens.get(avanza)[1]+"\t"+arregloTokens.get(avanza)[3]+"\t"+ambito);
-                            tablaDireccionesPesos.add(arregloTokens.get(avanza)[0]+"$"+arregloTokens.get(avanza)[1]+"$"+arregloTokens.get(avanza)[3]+"$"+ambito);
-                		avanza++;
-				if (arregloTokens.get(avanza)[0].contains("#")) {
+                            tablaDirecciones.add(arregloTokens.get(avanza)[0]+"\t105\t"+arregloTokens.get(avanza)[3]+"\t"+ambito);
+                            tablaDireccionesPesos.add(arregloTokens.get(avanza)[0]+"$105$"+arregloTokens.get(avanza)[3]+"$"+ambito);
+                            arregloTokens.get(avanza)[2]=tablaDirecciones.size()-1+"";
+                            arregloTokens.get(avanza)[1]="105";
+       				if (arregloTokens.get(avanza)[0].contains("#")) {
 					avanza++;
 					if (arregloTokens.get(avanza)[0].equals("(")) {
 						do {
@@ -184,12 +195,15 @@ public class Sintaxis {
 		} while (arregloTokens.get(avanza)[0].equals("procedure"));
 	}
 
-	private void idArreglo() {
+	
+        private void idArreglo() {
 		if (arregloTokens.get(avanza)[1].equals("100")) {
+                    if(modifTabToken(arregloTokens.get(avanza)[0])){
 			avanza++;
 			if (arregloTokens.get(avanza)[0].equals("[")) {
 				do {
 					avanza++;
+                                        modifTabToken(arregloTokens.get(avanza)[0]);
 					if (arregloTokens.get(avanza)[1].equals("101") || arregloTokens.get(avanza)[1].equals("800")) {
 						avanza++;
 					} else {
@@ -203,6 +217,7 @@ public class Sintaxis {
 					error("Se esperaba ]");
 				}
 			}
+                    }
 		} else {
 			error("Se esperaba un identificador");
 		}
@@ -277,9 +292,9 @@ public class Sintaxis {
 
 	private boolean tipo() {
             
-            for (String tipo1 : tipos) {
-                if (arregloTokens.get(avanza)[0].equals(tipo1)) {
-                    tipo=arregloTokens.get(avanza)[0];
+            for (int i=0;i<tipos.length;i++) {
+                if (arregloTokens.get(avanza)[0].equals(tipos[i])) {
+                    tipo=101+i;
                     return true;
                 }
             }
@@ -478,13 +493,15 @@ public class Sintaxis {
 	private void ejecutar() {
 		if (arregloTokens.get(avanza)[0].equals("call")) {
 			avanza++;
-			if (arregloTokens.get(avanza)[1].equals("101")) {
+			if (arregloTokens.get(avanza)[1].equals("105")) {
 				avanza++;
 				if (arregloTokens.get(avanza)[0].equals("(")) {
 					do {
 						avanza++;
 						if (arregloTokens.get(avanza)[1].equals("100")) {
+                                                    if(modifTabToken(arregloTokens.get(avanza)[0])){
 							avanza++;
+                                                    }
 						} else {
 							error("Se esperaba un identificador");
 						}
@@ -529,15 +546,21 @@ public class Sintaxis {
 		if (logicos()) {
 			avanza++;
 			condicion();
+                        
 		}
 
 	}
-
-    private int getNumToken() {
-      for(int x=0;x<tipos.length;x++)
-        if(tipo.equals(tipos[x])){
-            return x+101;
+        
+        private boolean modifTabToken(String nombreTok){
+            for(int tok=tablaSimbolosPesos.size()-1;tok>=0;tok--){
+                String separa[]=tablaSimbolosPesos.get(tok).split("\\$");
+                if(nombreTok.equals(separa[0])){
+                    arregloTokens.get(avanza)[1]=separa[1];
+                     arregloTokens.get(avanza)[2]=tok+1+"";
+                     return true;
+                }
+            }
+            error("Variable no declarada en este ambito");
+                    return false;
         }
-      return 100;
-    }
 }
