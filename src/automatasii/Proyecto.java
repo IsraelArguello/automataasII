@@ -13,6 +13,7 @@ public class Proyecto {
             lexico.leerArchivo();
             lexico.impArchivo();
             sintaxis.leerArchivo();
+            sintaxis.impArchivo();
             
         } catch (IOException e) {
             System.out.println("Archivo no encontrado");

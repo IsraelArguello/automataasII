@@ -8,8 +8,11 @@ package automatasii;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  *
@@ -575,5 +578,44 @@ public class Sintaxis {
         }
         error("Variable no declarada en este ambito");
         return false;
+    }
+    
+    public void impArchivo()
+    {
+        FileWriter fichero = null;
+        PrintWriter pw = null;
+        try
+        {
+            fichero = new FileWriter("./tablaTokens.txt");
+            pw = new PrintWriter(fichero);
+
+            for (int i = 0; i < arregloTokens.size(); i++)
+                if(i==0){
+                 pw.println("\t Token\t Num. Token\t Posición tabla\t Num. Linea"); 
+                }else{
+                pw.println("\t"+arregloTokens.get(i)[0]+"\t\t"+arregloTokens.get(i)[1]+"\t\t"+arregloTokens.get(i)[2]+"\t\t"+arregloTokens.get(i)[3]);
+                }
+            
+               fichero.close();
+                          
+            fichero = new FileWriter("./tablaDirecciones.txt");
+            pw = new PrintWriter(fichero);
+
+            for (int i = 0; i < tablaDirecciones.size(); i++)
+                pw.println(tablaDirecciones.get(i));
+            
+           fichero.close();
+            
+             fichero = new FileWriter("./tablaSimbolos.txt");
+            pw = new PrintWriter(fichero);
+
+            for (int i = 0; i < tablaSimbolos.size(); i++)
+                pw.println(tablaSimbolos.get(i));
+            
+             fichero.close();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
