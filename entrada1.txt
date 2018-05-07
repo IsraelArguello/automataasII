@@ -1,8 +1,9 @@
 program #hola 
 integer #i[1];
 integer #z;
+procedure #a(integer #j){
+}
 {
 #z=0;
 #i[#z]=1+1;
 }
-

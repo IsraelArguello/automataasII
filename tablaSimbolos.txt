@@ -1,3 +1,4 @@
 Id	Token	Dim1	Dim2	Ambito
 #i	101	0	1	0	0
 #z	101	0	0	0	0
+#j	101	0	0	0	1
