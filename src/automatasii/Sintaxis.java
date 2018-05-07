@@ -43,7 +43,7 @@ public class Sintaxis {
     }
 
     public void leerArchivo() {
-        tablaSimbolos.add("Id\tToken\tDim1\tDim2\tAmbito");
+        tablaSimbolos.add("Id\tToken\tValor\tDim1\tDim2\tAmbito");
         tablaDirecciones.add("Id\tToken\t#Linea\tVCI");
         String cadena = "";
         FileReader fr = null;
@@ -73,13 +73,13 @@ public class Sintaxis {
                 arregloTokens.get(avanza)[1] = "105";
                 arregloTokens.get(avanza)[2] = "0";
                 tablaDirecciones.add(arregloTokens.get(avanza)[0] + "\t" + arregloTokens.get(avanza)[1] + "\t"
-                        + arregloTokens.get(avanza)[3] + "\t" + ambito);
+                        + arregloTokens.get(avanza)[3] + "\t0");
                 tablaDireccionesPesos.add(arregloTokens.get(avanza)[0] + "$" + arregloTokens.get(avanza)[1] + "$"
-                        + arregloTokens.get(avanza)[3] + "$" + ambito);
+                        + arregloTokens.get(avanza)[3] + "$0");
                 avanza++;
                 declararVar();
                 metodo();
-                if (arregloTokens.get(avanza)[0].equals("{")) {
+                if (avanza < arregloTokens.size() - 1 && arregloTokens.get(avanza)[0].equals("{")) {
                     avanza++;
                     estatuto();
                     if (arregloTokens.get(avanza)[0].equals("}")) {
@@ -125,12 +125,6 @@ public class Sintaxis {
                                 avanza++;
                                 if (arregloTokens.get(avanza)[0].contains(";")) {
                                     avanza++;
-                                    tablaSimbolos.add(tokenTem + "\t" + tipo + "\t0\t" + dims[0] + "\t" + dims[1] + "\t"
-                                            + ambito);
-                                    tablaSimbolosPesos.add(
-                                            tokenTem + "$" + tipo + "$0$" + dims[0] + "$" + dims[1] + "$" + ambito);
-                                    arregloTokens.get(indexTok)[2] = tablaSimbolos.size() - 1 + "";
-                                    arregloTokens.get(indexTok)[1] = tipo + "";
                                 } else {
                                     error("Se esperaba ;");
                                 }
@@ -139,17 +133,17 @@ public class Sintaxis {
                             }
                         } else if (arregloTokens.get(avanza)[0].contains(";")) {
                             avanza++;
-                            tablaSimbolos
-                                    .add(tokenTem + "\t" + tipo + "\t0\t" + dims[0] + "\t" + dims[1] + "\t" + ambito);
-                            tablaSimbolosPesos
-                                    .add(tokenTem + "$" + tipo + "$0$" + dims[0] + "$" + dims[1] + "$" + ambito);
-                            arregloTokens.get(indexTok)[2] = tablaSimbolos.size() - 1 + "";
-                            arregloTokens.get(indexTok)[1] = tipo + "";
-
                         }
+                        tablaSimbolos.add(tokenTem + "\t" + tipo + "\t0\t" + dims[0] + "\t" + dims[1] + "\t"
+                                + ambito);
+                        tablaSimbolosPesos.add(
+                                tokenTem + "$" + tipo + "$0$" + dims[0] + "$" + dims[1] + "$" + ambito);
+                        arregloTokens.get(indexTok)[2] = tablaSimbolos.size() - 1 + "";
+                        arregloTokens.get(indexTok)[1] = tipo + "";
                     } else {
                         error("Se esperaba una variable");
                     }
+
                 } while (arregloTokens.get(avanza)[0].equals(","));
             }
         } while (tipo());
@@ -162,9 +156,9 @@ public class Sintaxis {
                 avanza++;
                 ambito++;
                 tablaDirecciones
-                        .add(arregloTokens.get(avanza)[0] + "\t105\t" + arregloTokens.get(avanza)[3] + "\t" + ambito);
+                        .add(arregloTokens.get(avanza)[0] + "\t105\t" + arregloTokens.get(avanza)[3] + "\t0");
                 tablaDireccionesPesos
-                        .add(arregloTokens.get(avanza)[0] + "$105$" + arregloTokens.get(avanza)[3] + "$" + ambito);
+                        .add(arregloTokens.get(avanza)[0] + "$105$" + arregloTokens.get(avanza)[3] + "$0");
                 arregloTokens.get(avanza)[2] = tablaDirecciones.size() - 1 + "";
                 arregloTokens.get(avanza)[1] = "105";
                 if (arregloTokens.get(avanza)[1].equals("105")) {
@@ -213,8 +207,6 @@ public class Sintaxis {
                     error("Error: se esperaba un identificador");
                 }
 
-            } else {
-                error("Error: se esperaba un palabra reservada \"procedure\"");
             }
 
         } while (avanza < arregloTokens.size() - 1 && arregloTokens.get(avanza)[0].equals("procedure"));
@@ -227,7 +219,9 @@ public class Sintaxis {
                 if (arregloTokens.get(avanza)[0].equals("[")) {
                     do {
                         avanza++;
-                        modifTabToken(arregloTokens.get(avanza)[0]);
+                        if (arregloTokens.get(avanza)[1].equals("100")) {
+                            modifTabToken(arregloTokens.get(avanza)[0]);
+                        }
                         if (arregloTokens.get(avanza)[1].equals("101") || arregloTokens.get(avanza)[1].equals("800")) {
                             avanza++;
                         } else {
@@ -288,22 +282,16 @@ public class Sintaxis {
             if (arregloTokens.get(avanza)[1].equals("100")) {
                 asigna();
             } else if (arregloTokens.get(avanza)[0].equals("input")) {
-                avanza++;
                 leer();
             } else if (arregloTokens.get(avanza)[0].equals("output")) {
-                avanza++;
                 escribir();
             } else if (arregloTokens.get(avanza)[0].equals("if")) {
-                avanza++;
                 si();
             } else if (arregloTokens.get(avanza)[0].equals("repeat")) {
-                avanza++;
                 repetir();
             } else if (arregloTokens.get(avanza)[0].equals("while")) {
-                avanza++;
                 mientras();
             } else if (arregloTokens.get(avanza)[0].equals("call")) {
-                avanza++;
                 ejecutar();
             } else {
                 error("Error: Se esperaba un estatuto");
@@ -358,7 +346,11 @@ public class Sintaxis {
     }
 
     private void error(String error) {
-        System.out.println(error + "\nLinea:" + arregloTokens.get(avanza)[3]);
+        if (avanza < arregloTokens.size() - 1) {
+            System.out.println(error + "\nLinea:" + arregloTokens.get(avanza)[3]);
+        } else {
+            System.out.println(error + "\nLinea:" + arregloTokens.get(avanza - 1)[3]);
+        }
         System.exit(0);
     }
 
@@ -584,7 +576,8 @@ public class Sintaxis {
                 return true;
             }
         }
-        error("Variable no declarada en este ambito");
+        error("variable no declarada en este u otro ambito");
+
         return false;
     }
 
@@ -597,7 +590,6 @@ public class Sintaxis {
                 return true;
             }
         }
-        error("Variable no declarada en este ambito");
         return false;
     }
 

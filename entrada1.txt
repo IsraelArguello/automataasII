@@ -1,7 +1,12 @@
-program #hola 
-integer #i[1];
-integer #z;
-procedure #a(integer #j){
-#z=0;
-#i[#z]=1+1;
+program #xxx
+integer #i,#j,#k;
+real #m[1];
+procedure #uno()
+string #h,#i;
+{
+#i=0;
+}
+{
+#m[0]=0;
+input(#i);
 }

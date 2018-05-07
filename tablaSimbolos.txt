@@ -1,4 +1,7 @@
-Id	Token	Dim1	Dim2	Ambito
-#i	101	0	1	0	0
-#z	101	0	0	0	0
-#j	101	0	0	0	1
+Id	Token	Valor	Dim1	Dim2	Ambito
+#i	101	0	0	0	0
+#j	101	0	0	0	0
+#k	101	0	0	0	0
+#m	102	0	1	0	0
+#h	103	0	0	0	1
+#i	103	0	0	0	1
