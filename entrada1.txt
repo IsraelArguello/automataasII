@@ -1,12 +1,17 @@
 program #xxx
 integer #i,#j,#k;
-real #m[1];
+real #m[#z];
 procedure #uno()
 string #h,#i;
 {
 #i=0;
 }
+procedure #dos()
+integer #z;
 {
-#m[0]=0;
+#z=0;
+}
+{
+#m[-1]=0;
 input(#i);
 }

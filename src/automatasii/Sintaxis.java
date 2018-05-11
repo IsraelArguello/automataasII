@@ -603,6 +603,8 @@ public class Sintaxis {
             for (int i = 0; i < arregloTokens.size(); i++) {
                 if (i == 0) {
                     pw.println("\t Token\t Num. Token\t Posición tabla\t Num. Linea");
+                    pw.println("\t" + arregloTokens.get(i)[0] + "\t\t" + arregloTokens.get(i)[1] + "\t\t"
+                            + arregloTokens.get(i)[2] + "\t\t" + arregloTokens.get(i)[3]);
                 } else {
                     pw.println("\t" + arregloTokens.get(i)[0] + "\t\t" + arregloTokens.get(i)[1] + "\t\t"
                             + arregloTokens.get(i)[2] + "\t\t" + arregloTokens.get(i)[3]);
